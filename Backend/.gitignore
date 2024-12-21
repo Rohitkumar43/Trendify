@@ -1,0 +1,44 @@
+# Node.js modules
+node_modules/
+
+# TypeScript build output
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.test
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.iml
+
+# Cache and Temp Files
+*.tmp
+*.log
+*.cache
+
+# Test Coverage
+coverage/
+
+# Dependency Lock Files (if you're using multiple package managers)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Misc
+*.tgz
+*.zip
