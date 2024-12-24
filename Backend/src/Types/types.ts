@@ -9,19 +9,19 @@ export interface NewUserRequestBody {
   dob: Date;
 }
 
-// export interface NewProductRequestBody {
-//   name: string;
-//   category: string;
-//   price: number;
-//   stock: number;
-//   description: string;
-// }
+export interface NewProductRequestBody {
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  description: string;
+}
 
 export type ControllerType = (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void | Response<any, Record<string, any>>>;
+) => Promise<void>;
 
 // export type SearchRequestQuery = {
 //   search?: string;
