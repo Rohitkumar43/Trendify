@@ -25,7 +25,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // ✅ API Endpoints
 console.log("✅ User routes loaded");
 app.use('/api/v1/user', userRoute);
-app.use('api/v1/product' , productRoute);
+app.use('/api/v1/product' , productRoute);
 
 // ✅ Global Error Handler Middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
