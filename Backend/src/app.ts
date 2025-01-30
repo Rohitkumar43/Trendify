@@ -4,11 +4,15 @@ import connectDB from "./utils/dbconnect.js";
 import dotenv from "dotenv";
 import userRoute from "./Routes/user.js";
 import productRoute  from './Routes/products.js'
-
+import NodeCache from "node-cache";
 dotenv.config();
 
+
+export const myCache = new NodeCache();
 const app = express();
 const port = process.env.PORT || 4000;
+
+
 
 // ✅ Middleware
 app.use(express.json());

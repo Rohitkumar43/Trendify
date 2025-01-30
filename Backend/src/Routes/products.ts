@@ -1,34 +1,38 @@
-import express  from "express";
-import {deleteUser, getAllUsers, getUser, newUser} from "../Controllers/user.js";
+import express from "express";
 import { adminOnly } from "../middleware/auth.js";
-import { deleteProduct, getAllAdminProduct, getAllCategoriesProduct, getLatestProduct, getSingleProduct, newProduct, updateProduct } from "../Controllers/products.js";
+import {
+    deleteProduct,
+    getAllAdminProduct,
+    getAllCategoriesProduct,
+    getAllProducts,
+    getLatestProduct,
+    getSingleProduct,
+    newProduct,
+    updateProduct
+} from "../Controllers/products.js";
 import { singlePicUpload } from "../middleware/multer.js";
-import { get } from "http";
 //import { adminOnly } from "../middlewares/auth.js";
- 
+
 const app = express.Router();
 
 
 // create the [product]
-app.post('/new' , adminOnly , singlePicUpload , newProduct )
+app.post('/new', adminOnly, singlePicUpload, newProduct)
 // GET THE LATEST PRDS 
-app.get('/latestproduct' , getLatestProduct);
+app.get('/latestproduct', getLatestProduct);
+// to get all tge prd based on the filter nad the catefory 
+app.get('/all', getAllProducts);
 // get all the categories prds
-app.get('/allcategories' , getAllCategoriesProduct)
+app.get('/allcategories', getAllCategoriesProduct)
 // get all the admin products so that we can search it and in this only pagination 
 // will work and all the product get filter acc to tge property
 
-app.get('/admin-prd' , getAllAdminProduct);
+app.get('/admin-prd', adminOnly, getAllAdminProduct);
 // to get single prd
-app.get('/singleprd' , getSingleProduct);
+app.get('/singleprd', getSingleProduct);
 // to update and delete the product 
-app.route(':id/').get(getSingleProduct).put(singlePicUpload , updateProduct).delete(deleteProduct)
-
-
-
-
-
-
+app.route(':id/').get(getSingleProduct).put(adminOnly, singlePicUpload, updateProduct)
+    .delete(adminOnly, deleteProduct)
 
 
 

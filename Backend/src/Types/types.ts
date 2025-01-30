@@ -23,22 +23,22 @@ export type ControllerType = (
   next: NextFunction
 ) => Promise<void>;
 
-// export type SearchRequestQuery = {
-//   search?: string;
-//   price?: string;
-//   category?: string;
-//   sort?: string;
-//   page?: string;
-// };
+export type SearchRequestQuery = {
+  search?: string;
+  price?: string;
+  category?: string;
+  sort?: string;
+  page?: string;
+};
 
-// export interface BaseQuery {
-//   name?: {
-//     $regex: string;
-//     $options: string;
-//   };
-//   price?: { $lte: number };
-//   category?: string;
-// }
+export interface BaseQuery {
+  name?: {
+    $regex: string;
+    $options: string;
+  };
+  price?: { $lte: number };
+  category?: string;
+}
 
 // export type InvalidateCacheProps = {
 //   product?: boolean;
