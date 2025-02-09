@@ -7,7 +7,7 @@ import productRoute  from './Routes/products.js'
 import NodeCache from "node-cache";
 dotenv.config();
 
-
+// now we will create the cache for the products  using the node cache which is a in memory cache  diff from the redis cache 
 export const myCache = new NodeCache();
 const app = express();
 const port = process.env.PORT || 4000;

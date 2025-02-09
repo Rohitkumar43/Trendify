@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { myCache } from "../app.js";
+import { InvalidateCacheProps } from "../Types/types.js";
 
 dotenv.config(); // Load environment variables from .env
 
@@ -19,3 +21,19 @@ const connectDB = async (): Promise<void> => {
 };
 
 export default connectDB;
+
+// fxn for the invalidate cache 
+export const invalidateCache = ({product , order , admin } : InvalidateCacheProps) => {
+  if(product){
+    const productKeys : string[] = [ "latest-product" , "all-categories" , "all-admin-products"];
+    
+    
+    myCache.del(productKeys);
+  }
+  if(order){
+    myCache.del(`order-${order}`);
+  }
+  if(admin){
+    myCache.del(`admin-${admin}`);
+  }
+};

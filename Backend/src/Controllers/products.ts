@@ -6,6 +6,8 @@ import ErrorHandler from "../utils/utility-class.js";
 import { Request, Response, NextFunction, response } from "express";
 import { myCache } from "../app.js";
 
+
+// to create the new product 
 export const newProduct = TryCatch(
   async (req: Request<{}, {}, NewProductRequestBody>, res: Response, next: NextFunction) => {
     // console.log('📦 Body:', req.body); // Log incoming body
@@ -115,7 +117,10 @@ export const getSingleProduct = TryCatch(
   async (req, res, next) => {
     const productId = req.params.id
     let product;
-
+    // here we will check if the product is in the cache or not 
+    // if it is in the cache then we will use it from the cache 
+    // if it is not in the cache then we will use it from the database 
+    // and then we will store it in the cache 
     if (myCache.has(`product-${productId}`)) {
       product = JSON.parse(myCache.get(`product-${productId}`) as string);
     } else {
@@ -192,6 +197,7 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
 
 // logic for all of the routing based ont he search and th ecategoreis 
 // get all the prd based on the filter and the categories wise 
+// here we use the pagination and the sorting and the filtering 
 
 
 export const getAllProducts = TryCatch(

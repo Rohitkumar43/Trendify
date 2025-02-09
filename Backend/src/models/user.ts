@@ -54,6 +54,7 @@ const schema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
 // virtual fxn for the age 
  schema.virtual("age").get(function () {
   const today = new Date();
