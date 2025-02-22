@@ -6,6 +6,7 @@ import userRoute from "./Routes/user.js";
 import productRoute  from './Routes/products.js'
 import NodeCache from "node-cache";
 dotenv.config();
+import  newOrder from "./Routes/order.js";
 
 // now we will create the cache for the products  using the node cache which is a in memory cache  diff from the redis cache 
 export const myCache = new NodeCache();
@@ -30,6 +31,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 console.log("✅ User routes loaded");
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/product' , productRoute);
+app.use('/api/v1/order' , newOrder);
 
 // ✅ Global Error Handler Middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

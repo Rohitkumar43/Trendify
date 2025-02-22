@@ -22,18 +22,4 @@ const connectDB = async (): Promise<void> => {
 
 export default connectDB;
 
-// fxn for the invalidate cache 
-export const invalidateCache = ({product , order , admin } : InvalidateCacheProps) => {
-  if(product){
-    const productKeys : string[] = [ "latest-product" , "all-categories" , "all-admin-products"];
-    
-    
-    myCache.del(productKeys);
-  }
-  if(order){
-    myCache.del(`order-${order}`);
-  }
-  if(admin){
-    myCache.del(`admin-${admin}`);
-  }
-};
+

@@ -5,6 +5,7 @@ import { BaseQuery, NewProductRequestBody, SearchRequestQuery } from "../Types/t
 import ErrorHandler from "../utils/utility-class.js";
 import { Request, Response, NextFunction, response } from "express";
 import { myCache } from "../app.js";
+import { invalidateCache } from "../utils/feature.js";
 
 
 // to create the new product 
@@ -28,7 +29,7 @@ export const newProduct = TryCatch(
     }
 
     const formattedCategory = typeof category === 'string' ? category.toLowerCase() : '';
-
+// product created
     await Product.create({
       name,
       price,
@@ -36,6 +37,8 @@ export const newProduct = TryCatch(
       category: formattedCategory,
       photos: photos.path,
     });
+
+    await invalidateCache({ product: true });
 
     res.status(201).json({
       success: true,
@@ -46,7 +49,7 @@ export const newProduct = TryCatch(
 );
 
 
-// ger the latest producty 
+// ger the latest producty  && cache the product
 export const getLatestProduct = TryCatch(
   async (req, res, next) => {
 // cahche wil store its value in th elocalstorage in theformof key valuepair 
@@ -69,7 +72,7 @@ if (myCache.has('latest-product')) {
 );
 
 
-// get all the categories prds 
+// get all the categories prds and also cache the prd
 export const getAllCategoriesProduct = TryCatch(
   async (req, res, next) => {
 
@@ -91,7 +94,7 @@ export const getAllCategoriesProduct = TryCatch(
 );
 
 
-// get all the admin products so that we can search it and in this only pagination 
+// get all the admin products so that we can search it and in this only pagination  and implement the cache
 // will work and all the product get filter acc to tge property 
 export const getAllAdminProduct = TryCatch(
   async (req, res, next) => {
@@ -111,7 +114,7 @@ export const getAllAdminProduct = TryCatch(
   }
 );
 
-// for the single products 
+// for the single products and implement the cache
 
 export const getSingleProduct = TryCatch(
   async (req, res, next) => {
@@ -175,6 +178,9 @@ export const updateProduct = TryCatch(async (req, res, next) => {
 });
 
 
+
+
+
 // to deelte the products 
 export const deleteProduct = TryCatch(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
@@ -187,6 +193,9 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
 
   await product.deleteOne();
 
+  await invalidateCache({ product: true });
+
+
   res.status(200).json({
     success: true,
     message: "Product Deleted Successfully",
@@ -195,7 +204,7 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
 });
 
 
-// logic for all of the routing based ont he search and th ecategoreis 
+// logic for all of the routing based on the search and th ecategoreis 
 // get all the prd based on the filter and the categories wise 
 // here we use the pagination and the sorting and the filtering 
 
