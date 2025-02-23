@@ -9,42 +9,96 @@ import { invalidateCache } from "../utils/feature.js";
 
 
 // to create the new product 
+// export const newProduct = TryCatch(
+//   async (req: Request<{}, {}, NewProductRequestBody>, res: Response, next: NextFunction) => {
+//     // Debug logging
+//     console.log('Received body:', req.body);
+//     console.log('Received file:', req.file);
+//     // console.log('📦 Body:', req.body); // Log incoming body
+//     // console.log('📸 File:', req.file); // Log uploaded file
+
+//     const { name, price, stock, category , description } = req.body;
+//     const photos = req.file;
+
+//     // ✅ Input Validation
+
+//     if (!photos) return next(new ErrorHandler("Please add Photo", 400));
+//     if (!name || !price || !stock || !category || !photos || !description) {
+//       // to delete the as wahi par 
+//       rm(photos.path, () => {
+//         console.log('pic is deleted ')
+//       })
+//       return next(new ErrorHandler("All fields (name, price, stock, category, photos , description) are required!", 400));
+//     }
+
+//     const formattedCategory = typeof category === 'string' ? category.toLowerCase() : '';
+// // product created
+//     await Product.create({
+//       name,
+//       price,
+//       stock,
+//       category: formattedCategory,
+//       photos: photos.path,
+//       description
+//     });
+
+//     await invalidateCache({ product: true });
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Product Created Successfully",
+//     });
+//     return;
+//   }
+// );
+
 export const newProduct = TryCatch(
   async (req: Request<{}, {}, NewProductRequestBody>, res: Response, next: NextFunction) => {
-    // console.log('📦 Body:', req.body); // Log incoming body
-    // console.log('📸 File:', req.file); // Log uploaded file
+    // Enhanced Debug logging
+    console.log('------ Debug Info ------');
+    console.log('Body:', JSON.stringify(req.body, null, 2));
+    console.log('File:', req.file);
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('----------------------');
 
-    const { name, price, stock, category } = req.body;
-    const photos = req.file;
+    // Parse numeric values
+    const price = Number(req.body.price);
+    const stock = Number(req.body.stock);
+    
+    const product = {
+      name: req.body.name,
+      price: price,
+      stock: stock,
+      category: req.body.category?.toLowerCase(),
+      description: req.body.description,
+      photos: req.file?.path
+    };
 
-    // ✅ Input Validation
+    // Log the final product object
+    console.log('Product to create:', product);
 
-    if (!photos) return next(new ErrorHandler("Please add Photo", 400));
-    if (!name || !price || !stock || !category || !photos) {
-      // to delete the as wahi par 
-      rm(photos.path, () => {
-        console.log('pic is deleted ')
-      })
-      return next(new ErrorHandler("All fields (name, price, stock, category, photos) are required!", 400));
+    try {
+      const createdProduct = await Product.create(product);
+      console.log('Created product:', createdProduct);
+
+      await invalidateCache({ product: true });
+
+        res.status(201).json({
+        success: true,
+        message: "Product Created Successfully",
+        product: createdProduct
+      });
+
+    } catch (error) {
+      // Clean up uploaded file if there's an error
+      if (req.file?.path) {
+        rm(req.file.path, () => {
+          console.log('Photo deleted due to error');
+        });
+      }
+      console.error('Error creating product:', error);
+      return next(error);
     }
-
-    const formattedCategory = typeof category === 'string' ? category.toLowerCase() : '';
-// product created
-    await Product.create({
-      name,
-      price,
-      stock,
-      category: formattedCategory,
-      photos: photos.path,
-    });
-
-    await invalidateCache({ product: true });
-
-    res.status(201).json({
-      success: true,
-      message: "Product Created Successfully",
-    });
-    return;
   }
 );
 

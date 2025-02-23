@@ -53,17 +53,17 @@ export const newOrder = TryCatch(async(req: Request<{} , {} , NewOrderRequestBod
 
 // get all the orders by the user 
 
-export const getMyorder = TryCatch(async(req: Request<{} , {} , {} > , res: Response , next: NextFunction) => {
-    // GET THE USER ID 
-    const userId = req.params.id;
-    // get all the orders by the user
-    const orders = await Order.find({user: userId});
-    res.status(200).json({
-        success: true,
-        message: 'All the orders by the user',
-        orders
-    })
-});
+// export const getMyorder = TryCatch(async(req: Request<{} , {} , {} > , res: Response , next: NextFunction) => {
+//     // GET THE USER ID 
+//     const userId = req.params.id;
+//     // get all the orders by the user
+//     const orders = await Order.find({user: userId});
+//     res.status(200).json({
+//         success: true,
+//         message: 'All the orders by the user',
+//         orders
+//     })
+// });
 
 
 // delete order 
