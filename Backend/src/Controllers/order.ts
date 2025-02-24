@@ -20,6 +20,12 @@ export const newOrder = TryCatch(async(req: Request<{} , {} , NewOrderRequestBod
         return next(new ErrorHandler('No order items',400))
     }
 
+
+    if (!orderItems || !shippingInfo || !user || !subtotal || !tax || !shippingCharges || !discount || !total) {
+        return next (new ErrorHandler("PLEASE enter all the fields" , 400))
+        
+    }
+
     // creater the order 
     const order =  await Order.create({
         orderItems,
@@ -38,8 +44,6 @@ export const newOrder = TryCatch(async(req: Request<{} , {} , NewOrderRequestBod
     await reduceStock(orderItems);
 
     await invalidateCache({ product: true  , order: true , admin: true});
-
-
 
     res.status(201).json({
         success: true,
