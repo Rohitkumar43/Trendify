@@ -11,6 +11,7 @@ export const errorMiddleware = (
   err.message ||= "Internal Server Error";
   err.statusCode ||= 500;
 
+  // this will throw when u will ge hte wrong id of the user 
   if (err.name === "CastError") err.message = "Invalid ID";
 
   return res.status(err.statusCode).json({
