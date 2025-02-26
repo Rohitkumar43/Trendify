@@ -198,10 +198,6 @@ export const deleteOrder = TryCatch(async (req, res, next) => {
 });
 
 
-
-
-
-
 // delete order
 
 // update the order 
