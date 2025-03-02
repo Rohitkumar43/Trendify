@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
+import Stripe from "stripe";
 import mongoose from "mongoose";
 import connectDB from "./utils/dbconnect.js";
 import dotenv from "dotenv";
@@ -9,11 +10,17 @@ dotenv.config();
 import  newOrder from "./Routes/order.js";
 import  payment  from "./Routes/payment.js";
 
+
 // now we will create the cache for the products  using the node cache which is a in memory cache  diff from the redis cache 
 export const myCache = new NodeCache();
-const app = express();
-const port = process.env.PORT || 4000;
 
+
+const port = process.env.PORT || 4000;
+const stripeKey = process.env.STRIPE_KEY || " ";
+
+// stripe 
+export const stripe = new Stripe(stripeKey);
+const app = express();
 
 
 // ✅ Middleware

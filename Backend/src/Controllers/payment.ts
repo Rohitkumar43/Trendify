@@ -3,6 +3,31 @@ import { TryCatch } from "../middleware/error.js"
 import { count } from "console";
 import ErrorHandler from "../utils/utility-class.js";
 import {Coupon} from "../models/coupan.js";
+import { stripe } from "../app.js";
+
+// STRIPE PAYMENT INTENT 
+
+export const  createPaymentIntent = TryCatch(async (req , res , next  ) => {
+
+    const {amount} = req.body;
+
+    if(!amount){
+        return next (new ErrorHandler("Please enter the coupan code " , 400))
+    }
+
+    const paytmentIntent = await stripe.paymentIntents.create({
+        amount: Number(amount ) * 100,
+        currency: "inr"
+    })
+
+    res.status(201).json({
+        success: true,
+        clientSecret: paytmentIntent.client_secret
+    })
+})
+
+
+
 
 
 // forr the couappan creation 

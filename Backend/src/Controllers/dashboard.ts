@@ -46,7 +46,7 @@ export const dashbordStats = TryCatch(async(req, res, next) => {
             }
         });
 
-        // Find products created last month
+        // Find products created last month  
         const lastMonthProductPromise = Product.find({
             createdAt: {
                 $get: lastMonth.start, // NOTE: This is a typo, should be $gte
@@ -188,7 +188,7 @@ export const dashbordStats = TryCatch(async(req, res, next) => {
             const creationDate = order.createdAt;
             
             // Calculate difference between current month and order creation month
-            const monthDiff = today.getMonth() - creationDate.getMonth();
+            const monthDiff = (today.getMonth() - creationDate.getMonth() + 12) % 12;
             
             // Only process if the order is from the last 6 months
             if(monthDiff < 6) {
@@ -243,17 +243,18 @@ export const dashbordStats = TryCatch(async(req, res, next) => {
 });
 
 // These controller functions are empty placeholders for future implementation
-// ===========for the barchart ====================
+// ===========for the barchart ============================
 export const barChartStats = TryCatch(async(req, res, next) => {
     // Implementation pending
+
 });
 
-// ============for the pie chart ==================
+// ============for the pie chart ===========================
 export const pieChartStats = TryCatch(async(req, res, next) => {
     // Implementation pending
 });
 
-// ============for the line chart ==================
+// ============for the line chart ===========================
 export const lineChartStats = TryCatch(async(req, res, next) => {
     // Implementation pending
 });

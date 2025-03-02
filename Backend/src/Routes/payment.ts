@@ -1,10 +1,11 @@
 import express from "express";
-import { applieddDiscount, avaibleCoupanByAdmin, deleteCoupan, newCoupon } from "../Controllers/payment.js";
+import { applieddDiscount, avaibleCoupanByAdmin, createPaymentIntent, deleteCoupan, newCoupon } from "../Controllers/payment.js";
 import { adminOnly } from "../middleware/auth.js";
 
 const app = express.Router();
 
-
+// create the payment intent 
+app.get('/create' , createPaymentIntent)
 // create the coupan
 app.post('/coupan/new', newCoupon);
 // check the discount 

@@ -36,7 +36,8 @@ export const invalidateCache = async ({ product, order, admin , userId , orderId
         myCache.del(`order-${order}`);
     }
     if (admin) {
-        myCache.del(`admin-${admin}`);
+        myCache.del("admin-stats");
+        //myCache.del(`admin-${admin}`);
     }
 };
 
@@ -64,14 +65,7 @@ export const reduceStock = async(orderItems: OrderItemType[]) => {
 
 export const calculatePercentage = (thisMonth: number , lastMonth: number) =>  {
 
-    const percentage = ((thisMonth - lastMonth) / lastMonth) * 100;
+    const percentage = (thisMonth / lastMonth) * 100;
 
     return Number(percentage.toFixed(0));
-
-    
-
-
-    
-
-
-}
+};
