@@ -49,7 +49,7 @@ const schema = new mongoose.Schema(
       required: true,
       default: 0
     },
-    totalAmount: {
+    total: {
       type: Number,
       required: true,
     },
