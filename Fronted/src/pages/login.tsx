@@ -3,7 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 import { auth } from "../firebase";
-import { getUser, useLoginMutation } from "../redux/api/userAPI";
+import { getUser, useLoginMutation } from "../redux/api/userApi";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 import { MessageResponse } from "../types/api-types";
 import { userExist, userNotExist } from "../redux/reducer/userReducer";
@@ -15,6 +15,9 @@ const Login = () => {
   const [date, setDate] = useState("");
 
   const [login] = useLoginMutation();
+
+  // this will handle the google auth and the authentication 
+
 
   const loginHandler = async () => {
     try {
@@ -56,6 +59,7 @@ const Login = () => {
     }
   };
 
+ 
   return (
     <div className="login">
       <main>

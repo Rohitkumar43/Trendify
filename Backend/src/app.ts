@@ -9,6 +9,7 @@ import NodeCache from "node-cache";
 dotenv.config();
 import  newOrder from "./Routes/order.js";
 import  payment  from "./Routes/payment.js";
+import cors from 'cors';
 
 
 // now we will create the cache for the products  using the node cache which is a in memory cache  diff from the redis cache 
@@ -25,6 +26,7 @@ const app = express();
 
 // ✅ Middleware
 app.use(express.json());
+app.use(cors());
 
 // ✅ Request Logging Middleware for Debugging
 app.use((req: Request, res: Response, next: NextFunction) => {
