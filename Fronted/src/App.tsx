@@ -1,8 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import Loader from './components/loader';
 import {Toaster} from 'react-hot-toast';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './firebase';
+import { useDispatch, useSelector } from 'react-redux';
+import { userExist, userNotExist } from './redux/reducer/userReducer';
+import { getUser } from './redux/api/userApi';
+import { UserReducerInitialState } from './types/reducer-types';
+import ProtectedRoute from './components/protected-routes';
 // User Routes
 const Home = lazy(() => import("./pages/home"));
 const Search = lazy(() => import("./pages/search"));
@@ -34,8 +41,39 @@ const TransactionManagement = lazy(() => import("./pages/admin/management/transa
 // import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
-  return (
+
+  const { user, loading } = useSelector(
+    (state: {userReducer: UserReducerInitialState}) => state.userReducer
+  );
+
+  const dispatch  = useDispatch();
+
+  useEffect(() => {
+    onAuthStateChanged(auth , async(user) => {
+
+      if (user) {
+        console.log("user logged in ");
+        const data = await getUser(user.uid)
+
+        dispatch(userExist(data.user))
+      } else {
+        console.log("not logged in ")
+        dispatch(userNotExist());
+
+      }
+    })
+  }, [])
+
+
+
+
+
+  return loading ? (
+    < Loader/>
+  ) : (
     <Router>
+      {/* header part  */}
+      <Headers user={user}/>
       <Suspense fallback={<Loader />}>
         <Routes>
           <Route>
@@ -47,15 +85,15 @@ const App = () => {
 
           {/* Admin Routes */}
           {/* Uncomment and implement ProtectedRoute when authentication is ready */}
-          {/* <Route 
+          <Route 
             element={
               <ProtectedRoute
-                isAuthenticated={true}
-                adminOnly={true}
+                isAuthenticated={user ? true : false}
+                //adminOnly={true}
                 // admin={user?.role === "admin" ? true : false}
               />
             }
-          > */}
+          >
             <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/admin/product" element={<Products />} />
             <Route path="/admin/customer" element={<Customers />} />
