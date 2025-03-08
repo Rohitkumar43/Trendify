@@ -7,14 +7,11 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { CartItem } from "../types/types";
 import videoCover from "../assets/videos/cover.mp4";
-import { useDispatch } from "react-redux";
-import { useLatestProductsQuery } from "../redux/api/productAPI";
-import { CartItem } from "../types/types";
 import { FaAnglesDown, FaHeadset } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { Slider } from "6pp";
-import { TbTruckDelivery } from "react-icons/tb";
-import { LuShieldCheck } from "react-icons/lu";
+// import { TbTruckDelivery } from "react-icons/tb";
+// import { LuShieldCheck } from "react-icons/lu";
 
 // const clients = [
 //   {

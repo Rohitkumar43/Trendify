@@ -22,10 +22,12 @@ export const productAPI = createApi({
   tagTypes: ["product"],
   endpoints: (builder) => ({
     latestProducts: builder.query<AllProductsResponse, string>({
+      // backend me latest product hai
       query: () => "latest",
       providesTags: ["product"],
     }),
     allProducts: builder.query<AllProductsResponse, string>({
+      // iss me yeh wala hai -> 'all-admin-products' //hai 
       query: (id) => `admin-products?id=${id}`,
       providesTags: ["product"],
     }),
@@ -55,36 +57,38 @@ export const productAPI = createApi({
       providesTags: ["product"],
     }),
 
-    allReviewsOfProducts: builder.query<AllReviewsResponse, string>({
-      query: (productId) => `reviews/${productId}`,
-      providesTags: ["product"],
-    }),
+    /* === ALL THE REVIEW HANDLE INT HE RTK QUERY ===== */
 
-    newReview: builder.mutation<MessageResponse, NewReviewRequest>({
-      query: ({ comment, rating, productId, userId }) => ({
-        url: `review/new/${productId}?id=${userId}`,
-        method: "POST",
-        body: { comment, rating },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-      invalidatesTags: ["product"],
-    }),
+    // allReviewsOfProducts: builder.query<AllReviewsResponse, string>({
+    //   query: (productId) => `reviews/${productId}`,
+    //   providesTags: ["product"],
+    // }),
 
-    deleteReview: builder.mutation<MessageResponse, DeleteReviewRequest>({
-      query: ({ reviewId, userId }) => ({
-        url: `/review/${reviewId}?id=${userId}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["product"],
-    }),
+    // newReview: builder.mutation<MessageResponse, NewReviewRequest>({
+    //   query: ({ comment, rating, productId, userId }) => ({
+    //     url: `review/new/${productId}?id=${userId}`,
+    //     method: "POST",
+    //     body: { comment, rating },
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   }),
+    //   invalidatesTags: ["product"],
+    // }),
+
+    // deleteReview: builder.mutation<MessageResponse, DeleteReviewRequest>({
+    //   query: ({ reviewId, userId }) => ({
+    //     url: `/review/${reviewId}?id=${userId}`,
+    //     method: "DELETE",
+    //   }),
+    //   invalidatesTags: ["product"],
+    // }),
 
     newProduct: builder.mutation<MessageResponse, NewProductRequest>({
       query: ({ formData, id }) => ({
         url: `new?id=${id}`,
         method: "POST",
-        body: formData,
+        body: formData, 
       }),
       invalidatesTags: ["product"],
     }),
@@ -111,11 +115,11 @@ export const productAPI = createApi({
 export const {
   useLatestProductsQuery,
   useAllProductsQuery,
-  useAllReviewsOfProductsQuery,
+ // useAllReviewsOfProductsQuery,
   useCategoriesQuery,
   useSearchProductsQuery,
-  useNewReviewMutation,
-  useDeleteReviewMutation,
+  //useNewReviewMutation,
+  //useDeleteReviewMutation,
   useNewProductMutation,
   useProductDetailsQuery,
   useUpdateProductMutation,
