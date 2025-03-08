@@ -3,12 +3,11 @@ import { FaTrash } from "react-icons/fa";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { useSelector } from "react-redux";
 import { UserReducerInitialState } from "../../../types/reducer-types";
-import { useParams } from "react-router-dom";
-import { useProductDetailsQuery } from "../../../redux/api/productAPI";
+import { useNavigate, useParams } from "react-router-dom";
+import { productAPI, useDeleteProductMutation, useProductDetailsQuery, useUpdateProductMutation } from "../../../redux/api/productAPI";
 import { server } from "../../../redux/store";
-
-const img =
-  "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8c2hvZXN8ZW58MHx8MHx8&w=1000&q=804";
+import { Skeleton } from "../../../components/loader";
+import { responseToast } from "../../../utils/feature";
 
 const Productmanagement = () => {
 
@@ -19,26 +18,33 @@ const Productmanagement = () => {
   );
 
   const params = useParams();
-  const {data} = useProductDetailsQuery(params.id!);
+  // navigator
+  const navigate =useNavigate();
+  const {data , isLoading} = useProductDetailsQuery(params.id!);
 
+  // Not using the direct usestate method for this 
+  // direct the var and and simply used it ....
 
-  const [product , setproduct ] = useState({
-    _id: "",
-    name: "",
-    photo: "",
-    category: "",
-    stock: 0,
-    price: 0
-  });
-
-  const {name , photo , category  , stock , price } = product
+  const {name , photo , category  , stock , price } = data?.product || {
+      name: "",
+      photo: "",
+      category: "",
+      stock: 0,
+      price: 0
+  }
 
   const [priceUpdate, setPriceUpdate] = useState<number>(price);
   const [stockUpdate, setStockUpdate] = useState<number>(stock);
   const [nameUpdate, setNameUpdate] = useState<string>(name);
   const [categoryUpdate, setCategoryUpdate] = useState<string>(category);
-  const [photoUpdate, setPhotoUpdate] = useState<string>(photo);
+  //isko maine update kiya hai chnage it acc to yr result 
+  const [photoUpdate, setPhotoUpdate] = useState<string | {url: string; public_id: string}[]>(photo);
   const [photoFile, setPhotoFile] = useState<File>();
+
+
+  // take the api and use it 
+  const [udpateProduct] = useUpdateProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
 
 
@@ -64,19 +70,56 @@ const Productmanagement = () => {
     }
   };
 
-  const submitHandler = (e: FormEvent<HTMLFormElement>): void => {
+  const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setName(nameUpdate);
-    setPrice(priceUpdate);
-    setStock(stockUpdate);
-    setPhoto(photoUpdate);
+
+    // Now we updATE THE FORM IF WE WANT TO ADD SOMEthing 
+    // for the product update in the form 
+
+    const formData = new FormData();
+
+    // updathe the fields 
+    if(nameUpdate) formData.set("name" , nameUpdate);
+    if(priceUpdate) formData.set("price" , priceUpdate.toString());
+    if(stockUpdate !== undefined) {
+      formData.set("stock" , stockUpdate.toString());
+    }
+    if(photoFile) formData.set("photo" , photoFile)
+    if(categoryUpdate) formData.set("category" , categoryUpdate);
+
+    // send the response 
+    const res = await udpateProduct({
+      formData,
+      userId: user?._id!,
+      productId: data?.product._id!
+    });
+
+    responseToast(res , navigate , '/admin/product')
   };
+
+  // Delete the product 
+
+  const deleteHandler = async () => {
+    
+    // send the response 
+    const res = await deleteProduct({
+      userId: user?._id!,
+      productId: data?.product._id!
+    });
+
+    responseToast(res , navigate , '/admin/products')
+  };
+
+
 
   // useffect to show the state data 
 
   useEffect(() => {
     if (data) {
-      setproduct(data.product);
+      setNameUpdate(data.product.name);
+      setCategoryUpdate(data.product.category);
+      setPhotoUpdate(data.product.photo);
+      setStockUpdate(data.product.stock);
     }
   }, [data])
 
@@ -84,8 +127,12 @@ const Productmanagement = () => {
     <div className="admin-container">
       <AdminSidebar />
       <main className="product-management">
-        <section>
-          <strong>ID - {product._id}</strong>
+       {
+        isLoading? <Skeleton/> : (
+          <>
+
+<section>
+          <strong>ID - {data?.product._id}</strong>
           <img src={`${server}/${photo}`} alt="Product" />
           <p>{name}</p>
           {stock > 0 ? (
@@ -96,7 +143,7 @@ const Productmanagement = () => {
           <h3>₹{price}</h3>
         </section>
         <article>
-          <button className="product-delete-btn">
+          <button className="product-delete-btn" onClick={deleteHandler}>
             <FaTrash />
           </button>
           <form onSubmit={submitHandler}>
@@ -143,11 +190,14 @@ const Productmanagement = () => {
               <label>Photo</label>
               <input type="file" onChange={changeImageHandler} />
             </div>
-
+{/* // fixed it using the copilot  */}
             {photoUpdate && <img src={photoUpdate} alt="New Image" />}
             <button type="submit">Update</button>
           </form>
         </article>
+          </>
+        )
+       }
       </main>
     </div>
   );
