@@ -2,17 +2,18 @@
 import { Link } from "react-router-dom";
 import { FaExpandAlt } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
+import { CartItem } from "../types/types";
 
 type ProductsProps = {
   productId: string;
-  photos: {
+  photo: {
     url: string;
     public_id: string;
   }[];
   name: string;
   price: number;
   stock: number;
-  //handler: (cartItem: CartItem) => string | undefined;
+  handler: (cartItem: CartItem) => string | undefined;
 };
 
 const server = 'sdbsdbv';
@@ -21,20 +22,20 @@ const ProductCard = ({
     productId,
     price,
     name,
-    photos,
+    photo,
     stock,
     handler,
   }: ProductsProps) => {
     return (
       <div className="product-card">
-        <img src={`${server} ${photos}`} alt={name} />
+        <img src={`${server} ${photo}`} alt={name} />
         <p>{name}</p>
         <span>₹{price}</span>
   
         <div>
           <button
             onClick={() =>
-              handler()
+              handler({ productId, name, price, photo, stock })
             }
           >
             <FaPlus />

@@ -4,7 +4,7 @@ import { Skeleton } from "../components/loader";
 import ProductCard from "../components/product-card";
 import { useLatestProductsQuery } from "../redux/api/productAPI";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/reducer/cartReducer";
+import { addToCart } from "../redux/reducer/cartreducer";
 import { CartItem } from "../types/types";
 import videoCover from "../assets/videos/cover.mp4";
 import { FaAnglesDown, FaHeadset } from "react-icons/fa6";
@@ -200,7 +200,7 @@ const Home = () => {
                 price={i.price}
                 stock={i.stock}
                 handler={addToCartHandler}
-                photos={i.photos}
+                photo={i.photo}
               />
             ))
           )}

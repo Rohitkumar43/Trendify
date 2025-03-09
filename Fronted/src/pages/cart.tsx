@@ -13,12 +13,14 @@ import {
   discountApplied,
   removeCartItem,
   saveCoupon,
-} from "../redux/reducer/cartReducer";
+} from "../redux/reducer/cartreducer";
 import { RootState, server } from "../redux/store";
 import { CartItem } from "../types/types";
 
 const Cart = () => {
-  const { cartItems, subtotal, tax, total, shippingCharges, discount } =
+
+  // use the use selector for the usestate 
+  const { cartItems, subtotal, tax, total, shippingCharge, discount } =
     useSelector((state: RootState) => state.cartReducer);
   const dispatch = useDispatch();
 
@@ -89,7 +91,7 @@ const Cart = () => {
       </main>
       <aside>
         <p>Subtotal: ₹{subtotal}</p>
-        <p>Shipping Charges: ₹{shippingCharges}</p>
+        <p>Shipping Charges: ₹{shippingCharge}</p>
         <p>Tax: ₹{tax}</p>
         <p>
           Discount: <em className="red"> - ₹{discount}</em>

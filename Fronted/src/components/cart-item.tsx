@@ -1,7 +1,8 @@
 import { FaTrash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { CartItem } from "../types/types";
-import { transformImage } from "../utils/features";
+//import { transformImage } from "../utils/features";
+import { server } from "../redux/store";
 
 type CartItemProps = {
   cartItem: CartItem;
@@ -20,7 +21,7 @@ const CartItemComponent = ({
 
   return (
     <div className="cart-item">
-      <img src={transformImage(photo)} alt={name} />
+      <img src={`${server}/${photo}`} alt={name} />
       <article>
         <Link to={`/product/${productId}`}>{name}</Link>
         <span>₹{price}</span>
