@@ -1,17 +1,18 @@
-import axios from "axios";
+//import axios from "axios";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+//import toast from "react-hot-toast";
 import { BiArrowBack } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { saveShippingInfo } from "../redux/reducer/cartReducer";
-import { RootState, server } from "../redux/store";
+//import { RootState, server } from "../redux/store";
+import { CartReducerInitialState } from "../types/reducer-types";
 
 const Shipping = () => {
-  const { cartItems, coupon } = useSelector(
-    (state: RootState) => state.cartReducer
+  const { cartItems } = useSelector(
+    (state: {cartReducer: CartReducerInitialState}) => state.cartReducer
   );
-  const { user } = useSelector((state: RootState) => state.userReducer);
+  //const { user } = useSelector((state: RootState) => state.userReducer);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const Shipping = () => {
     e.preventDefault();
 
     dispatch(saveShippingInfo(shippingInfo));
+  };
 
 //     try {
 //       const { data } = await axios.post(
@@ -59,10 +61,11 @@ const Shipping = () => {
 //     }
 //   };
 
-  useEffect(() => {
-    if (cartItems.length <= 0) return navigate("/cart");
-  }, [cartItems]);
-
+useEffect(() => {
+  if (cartItems.length <= 0) {
+    navigate("/cart");
+  }
+}, [cartItems, navigate]);
   return (
     <div className="shipping">
       <button className="back-btn" onClick={() => navigate("/cart")}>

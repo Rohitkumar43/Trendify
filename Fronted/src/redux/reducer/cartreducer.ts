@@ -23,7 +23,8 @@ const initialState: CartReducerInitialState = {
   tax: 0,                  
   shippingCharge: 0,        
   discount: 0,           
-  total: 0,               
+  total: 0, 
+  coupan: '',              
   shippingInfo: {      
     address: "",
     city: "",
@@ -127,6 +128,7 @@ export const {
     removeCartItem, 
     calculatePrice, 
     discountApplied, 
+    saveCoupon,
     saveShippingInfo, 
     resetCart 
 } = cartReducer.actions;

@@ -121,6 +121,8 @@ import {
     userId: string;
     productId: string;
   };
+
+  // types of all the order realted 
   
   export type NewOrderRequest = {
     shippingInfo: ShippingInfo;
@@ -142,6 +144,8 @@ import {
     userId: string;
     adminUserId: string;
   };
+
+  // type for the discount things 
   
   export type AllDiscountResponse = {
     success: boolean;
