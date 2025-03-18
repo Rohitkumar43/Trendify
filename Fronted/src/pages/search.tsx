@@ -42,7 +42,6 @@ const Search = () => {
   });
 
   const dispatch = useDispatch();
-
   const addToCartHandler = (cartItem: CartItem) => {
     if (cartItem.stock < 1) return toast.error("Out of Stock");
     dispatch(addToCart(cartItem));
@@ -121,7 +120,7 @@ const Search = () => {
                 price={i.price}
                 stock={i.stock}
                 handler={addToCartHandler}
-                photos={i.photos}
+                photo={i.photo}
               />
             ))}
           </div>

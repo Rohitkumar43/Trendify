@@ -4,7 +4,7 @@ import { Skeleton } from "../components/loader";
 import ProductCard from "../components/product-card";
 import { useLatestProductsQuery } from "../redux/api/productAPI";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../redux/reducer/cartreducer";
+import { addToCart } from "../redux/reducer/cartReducer";
 import { CartItem } from "../types/types";
 import videoCover from "../assets/videos/cover.mp4";
 import { FaAnglesDown, FaHeadset } from "react-icons/fa6";
@@ -132,11 +132,12 @@ import { Slider } from "6pp";
 // ];
 
 const Home = () => {
-  // this is coming from the rtk query of the product API 
+  // this is coming from the rtk query 4 of the product API 
   const { data, isError, isLoading } = useLatestProductsQuery("");
 
   const dispatch = useDispatch();
 
+  // fxn to add the items in the cart 
   const addToCartHandler = (cartItem: CartItem) => {
     if (cartItem.stock < 1) return toast.error("Out of Stock");
     dispatch(addToCart(cartItem));
