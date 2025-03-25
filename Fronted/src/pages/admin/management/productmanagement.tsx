@@ -45,15 +45,6 @@ const Productmanagement = () => {
   // take the api and use it 
   const [udpateProduct] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
-
-
-
-
-
-
-
-
-
   const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const file: File | undefined = e.target.files?.[0];
 

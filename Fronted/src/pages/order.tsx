@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { Column } from "react-table";
 import TableHOC from "../components/admin/TableHOC";
 import { Skeleton } from "../components/loader";
-import { useMyOrdersQuery } from "../redux/api/orderAPI";
+import { useMyOrderQuery } from "../redux/api/orderApi";
 import { RootState } from "../redux/store";
 import { CustomError } from "../types/api-types";
 
@@ -40,9 +40,9 @@ const column: Column<DataType>[] = [
 ];
 
 const Orders = () => {
-  const { user } = useSelector((state: RootState) => state.userReducer);
+  const { user } = useSelector((state: RootState) => state.useReducer);
 
-  const { isLoading, data, isError, error } = useMyOrdersQuery(user?._id!);
+  const { isLoading, data, isError, error } = useMyOrderQuery(user?._id!);
 
   const [rows, setRows] = useState<DataType[]>([]);
 
@@ -54,7 +54,8 @@ const Orders = () => {
   useEffect(() => {
     if (data)
       setRows(
-        data.orders.map((i) => ({
+        data.orders.map((i: any) => ({
+          // these will sew in the table 
           _id: i._id,
           amount: i.total,
           discount: i.discount,

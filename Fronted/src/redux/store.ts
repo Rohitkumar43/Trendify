@@ -3,7 +3,7 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { userApi } from "./api/userApi";
-import {useReducer} from './reducer/userReducer'
+import {useReducer} from './reducer/userReducer';
 import { productAPI } from "./api/productAPI";
 import { cartReducer } from "./reducer/cartReducer";
 import { orderApi } from "./api/orderApi";
@@ -18,7 +18,6 @@ export const store = configureStore({
         cartReducer: cartReducer.reducer,
     },
     middleware: (mid) => [...mid() , userApi.middleware , productAPI.middleware , orderApi.middleware]
-
 });
 
 
