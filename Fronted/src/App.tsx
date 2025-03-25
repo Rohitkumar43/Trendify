@@ -12,6 +12,7 @@ import { UserReducerInitialState } from './types/reducer-types';
 import ProtectedRoute from './components/protected-routes';
 import Login from './pages/login';
 import Header from './components/header';
+import NotFound from './pages/not-found';
 
 // Lazy-loaded User Routes
 const Home = lazy(() => import('./pages/home'));
@@ -113,6 +114,7 @@ const App = () => {
               <Route path='/admin/transaction/:id' element={<TransactionManagement />} />
             </Route>
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       

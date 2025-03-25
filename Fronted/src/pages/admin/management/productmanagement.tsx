@@ -1,3 +1,206 @@
+// import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+// import { FaTrash } from "react-icons/fa";
+// import AdminSidebar from "../../../components/admin/AdminSidebar";
+// import { useSelector } from "react-redux";
+// import { UserReducerInitialState } from "../../../types/reducer-types";
+// import { useNavigate, useParams } from "react-router-dom";
+// import { productAPI, useDeleteProductMutation, useProductDetailsQuery, useUpdateProductMutation } from "../../../redux/api/productAPI";
+// import { server } from "../../../redux/store";
+// import { Skeleton } from "../../../components/loader";
+// import { responseToast } from "../../../utils/feature";
+
+// const Productmanagement = () => {
+
+  
+//   // Redux setup
+//   const { user } = useSelector(
+//     (state: { useReducer: UserReducerInitialState }) => state.useReducer
+//   );
+
+//   const params = useParams();
+//   // navigator
+//   const navigate =useNavigate();
+//   const {data , isLoading} = useProductDetailsQuery(params.id!);
+
+//   // Not using the direct usestate method for this 
+//   // direct the var and and simply used it ....
+
+//   const {name , photo , category  , stock , price } = data?.product || {
+//       name: "",
+//       photo: "",
+//       category: "",
+//       stock: 0,
+//       price: 0
+//   }
+
+//   const [priceUpdate, setPriceUpdate] = useState<number>(price);
+//   const [stockUpdate, setStockUpdate] = useState<number>(stock);
+//   const [nameUpdate, setNameUpdate] = useState<string>(name);
+//   const [categoryUpdate, setCategoryUpdate] = useState<string>(category);
+//   //isko maine update kiya hai chnage it acc to yr result 
+//   const [photoUpdate, setPhotoUpdate] = useState<string | {url: string; public_id: string; src: string}[]>(photo);
+//   const [photoFile, setPhotoFile] = useState<File>();
+
+
+//   // take the api and use it 
+//   const [udpateProduct] = useUpdateProductMutation();
+//   const [deleteProduct] = useDeleteProductMutation();
+//   const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
+//     const file: File | undefined = e.target.files?.[0];
+
+//     const reader: FileReader = new FileReader();
+
+//     if (file) {
+//       reader.readAsDataURL(file);
+//       reader.onloadend = () => {
+//         if (typeof reader.result === "string") {
+//           setPhotoUpdate(reader.result);
+//           setPhotoFile(file);
+//         }
+//       };
+//     }
+//   };
+
+//   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+//     e.preventDefault();
+
+//     // Now we updATE THE FORM IF WE WANT TO ADD SOMEthing 
+//     // for the product update in the form 
+
+//     const formData = new FormData();
+
+//     // updathe the fields 
+//     if(nameUpdate) formData.set("name" , nameUpdate);
+//     if(priceUpdate) formData.set("price" , priceUpdate.toString());
+//     if(stockUpdate !== undefined) {
+//       formData.set("stock" , stockUpdate.toString());
+//     }
+//     if(photoFile) formData.set("photo" , photoFile)
+//     if(categoryUpdate) formData.set("category" , categoryUpdate);
+
+//     // send the response 
+//     const res = await udpateProduct({
+//       formData,
+//       userId: user?._id!,
+//       productId: data?.product._id!
+//     });
+
+//     responseToast(res , navigate , '/admin/product')
+//   };
+
+//   // Delete the product 
+
+//   const deleteHandler = async () => {
+    
+//     // send the response 
+//     const res = await deleteProduct({
+//       userId: user?._id!,
+//       productId: data?.product._id!
+//     });
+
+//     responseToast(res , navigate , '/admin/products')
+//   };
+
+
+
+//   // useffect to show the state data 
+
+//   useEffect(() => {
+//     if (data) {
+//       setNameUpdate(data.product.name);
+//       setCategoryUpdate(data.product.category);
+//       setPhotoUpdate(data.product.photo);
+//       setStockUpdate(data.product.stock);
+//     }
+//   }, [data])
+
+//   return (
+//     <div className="admin-container">
+//       <AdminSidebar />
+//       <main className="product-management">
+//        {
+//         isLoading? <Skeleton/> : (
+//           <>
+
+// <section>
+//           <strong>ID - {data?.product._id}</strong>
+//           <img src={`${server}/${photo}`} alt="Product" />
+//           <p>{name}</p>
+//           {stock > 0 ? (
+//             <span className="green">{stock} Available</span>
+//           ) : (
+//             <span className="red"> Not Available</span>
+//           )}
+//           <h3>₹{price}</h3>
+//         </section>
+//         <article>
+//           <button className="product-delete-btn" onClick={deleteHandler}>
+//             <FaTrash />
+//           </button>
+//           <form onSubmit={submitHandler}>
+//             <h2>Manage</h2>
+//             <div>
+//               <label>Name</label>
+//               <input
+//                 type="text"
+//                 placeholder="Name"
+//                 value={nameUpdate}
+//                 onChange={(e) => setNameUpdate(e.target.value)}
+//               />
+//             </div>
+//             <div>
+//               <label>Price</label>
+//               <input
+//                 type="number"
+//                 placeholder="Price"
+//                 value={priceUpdate}
+//                 onChange={(e) => setPriceUpdate(Number(e.target.value))}
+//               />
+//             </div>
+//             <div>
+//               <label>Stock</label>
+//               <input
+//                 type="number"
+//                 placeholder="Stock"
+//                 value={stockUpdate}
+//                 onChange={(e) => setStockUpdate(Number(e.target.value))}
+//               />
+//             </div>
+
+//             <div>
+//               <label>Category</label>
+//               <input
+//                 type="text"
+//                 placeholder="eg. laptop, camera etc"
+//                 value={categoryUpdate}
+//                 onChange={(e) => setCategoryUpdate(e.target.value)}
+//               />
+//             </div>
+
+//             <div>
+//               <label>Photo</label>
+//               <input type="file" onChange={changeImageHandler} />
+//             </div>
+// {/* // fixed it using the copilot  */}
+//             {photoUpdate && <img src={photoUpdate} alt="New Image" />}
+//             <button type="submit">Update</button>
+//           </form>
+//         </article>
+//           </>
+//         )
+//        }
+//       </main>
+//     </div>
+//   );
+// };
+
+// export default Productmanagement;
+
+// this is the real code adnf the error free and the 
+//  and this cofer is about the product managment adn the all thje produict 
+
+
+// React and other required imports
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
@@ -10,185 +213,160 @@ import { Skeleton } from "../../../components/loader";
 import { responseToast } from "../../../utils/feature";
 
 const Productmanagement = () => {
-
-  
-  // Redux setup
+  // Redux setup to get user info
   const { user } = useSelector(
     (state: { useReducer: UserReducerInitialState }) => state.useReducer
   );
 
   const params = useParams();
-  // navigator
-  const navigate =useNavigate();
-  const {data , isLoading} = useProductDetailsQuery(params.id!);
+  const navigate = useNavigate();
 
-  // Not using the direct usestate method for this 
-  // direct the var and and simply used it ....
+  // Fetch product details
+  const { data, isLoading } = useProductDetailsQuery(params.id!);
 
-  const {name , photo , category  , stock , price } = data?.product || {
-      name: "",
-      photo: "",
-      category: "",
-      stock: 0,
-      price: 0
-  }
+  // Extract product details from API response
+  const { name, photo, category, stock, price } = data?.product || {
+    name: "",
+    photo: "",
+    category: "",
+    stock: 0,
+    price: 0
+  };
 
+  // State for form updates
   const [priceUpdate, setPriceUpdate] = useState<number>(price);
   const [stockUpdate, setStockUpdate] = useState<number>(stock);
   const [nameUpdate, setNameUpdate] = useState<string>(name);
   const [categoryUpdate, setCategoryUpdate] = useState<string>(category);
-  //isko maine update kiya hai chnage it acc to yr result 
-  const [photoUpdate, setPhotoUpdate] = useState<string | {url: string; public_id: string}[]>(photo);
+
+  // Fixing the issue: Ensure `photoUpdate` is always a string
+  const [photoUpdate, setPhotoUpdate] = useState<string>(
+    typeof photo === "string" ? photo : photo[0]?.src || ""
+  );
   const [photoFile, setPhotoFile] = useState<File>();
 
-
-  // take the api and use it 
-  const [udpateProduct] = useUpdateProductMutation();
+  // API hooks for updating and deleting products
+  const [updateProduct] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
+
+  // Handle image selection
   const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
     const file: File | undefined = e.target.files?.[0];
 
-    const reader: FileReader = new FileReader();
-
     if (file) {
+      const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
-          setPhotoUpdate(reader.result);
-          setPhotoFile(file);
+          setPhotoUpdate(reader.result); // Set preview URL
+          setPhotoFile(file); // Store actual file for upload
         }
       };
     }
   };
 
+  // Handle form submission
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Now we updATE THE FORM IF WE WANT TO ADD SOMEthing 
-    // for the product update in the form 
-
     const formData = new FormData();
 
-    // updathe the fields 
-    if(nameUpdate) formData.set("name" , nameUpdate);
-    if(priceUpdate) formData.set("price" , priceUpdate.toString());
-    if(stockUpdate !== undefined) {
-      formData.set("stock" , stockUpdate.toString());
+    // Only update fields that have changed
+    if (nameUpdate) formData.set("name", nameUpdate);
+    if (priceUpdate) formData.set("price", priceUpdate.toString());
+    if (stockUpdate !== undefined) formData.set("stock", stockUpdate.toString());
+    if (photoFile) {
+      formData.set("photo", photoFile);
+    } else if (typeof photoUpdate === "string") {
+      formData.set("photo", photoUpdate);
     }
-    if(photoFile) formData.set("photo" , photoFile)
-    if(categoryUpdate) formData.set("category" , categoryUpdate);
+    if (categoryUpdate) formData.set("category", categoryUpdate);
 
-    // send the response 
-    const res = await udpateProduct({
+    // Send the update request
+    const res = await updateProduct({
       formData,
       userId: user?._id!,
       productId: data?.product._id!
     });
 
-    responseToast(res , navigate , '/admin/product')
+    responseToast(res, navigate, "/admin/product");
   };
 
-  // Delete the product 
-
+  // Handle product deletion
   const deleteHandler = async () => {
-    
-    // send the response 
     const res = await deleteProduct({
       userId: user?._id!,
       productId: data?.product._id!
     });
 
-    responseToast(res , navigate , '/admin/products')
+    responseToast(res, navigate, "/admin/products");
   };
 
-
-
-  // useffect to show the state data 
-
+  // Update form fields when product data changes
   useEffect(() => {
     if (data) {
       setNameUpdate(data.product.name);
       setCategoryUpdate(data.product.category);
-      setPhotoUpdate(data.product.photo);
+      setPhotoUpdate(typeof data.product.photo === "string" ? data.product.photo : data.product.photo[0]?.src || "");
       setStockUpdate(data.product.stock);
     }
-  }, [data])
+  }, [data]);
 
   return (
     <div className="admin-container">
       <AdminSidebar />
       <main className="product-management">
-       {
-        isLoading? <Skeleton/> : (
+        {isLoading ? <Skeleton /> : (
           <>
+            {/* Product Details Section */}
+            <section>
+              <strong>ID - {data?.product._id}</strong>
+              <img src={`${server}/${photoUpdate}`} alt="Product" />
+              <p>{name}</p>
+              {stock > 0 ? (
+                <span className="green">{stock} Available</span>
+              ) : (
+                <span className="red"> Not Available</span>
+              )}
+              <h3>₹{price}</h3>
+            </section>
 
-<section>
-          <strong>ID - {data?.product._id}</strong>
-          <img src={`${server}/${photo}`} alt="Product" />
-          <p>{name}</p>
-          {stock > 0 ? (
-            <span className="green">{stock} Available</span>
-          ) : (
-            <span className="red"> Not Available</span>
-          )}
-          <h3>₹{price}</h3>
-        </section>
-        <article>
-          <button className="product-delete-btn" onClick={deleteHandler}>
-            <FaTrash />
-          </button>
-          <form onSubmit={submitHandler}>
-            <h2>Manage</h2>
-            <div>
-              <label>Name</label>
-              <input
-                type="text"
-                placeholder="Name"
-                value={nameUpdate}
-                onChange={(e) => setNameUpdate(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Price</label>
-              <input
-                type="number"
-                placeholder="Price"
-                value={priceUpdate}
-                onChange={(e) => setPriceUpdate(Number(e.target.value))}
-              />
-            </div>
-            <div>
-              <label>Stock</label>
-              <input
-                type="number"
-                placeholder="Stock"
-                value={stockUpdate}
-                onChange={(e) => setStockUpdate(Number(e.target.value))}
-              />
-            </div>
+            {/* Product Management Section */}
+            <article>
+              <button className="product-delete-btn" onClick={deleteHandler}>
+                <FaTrash />
+              </button>
 
-            <div>
-              <label>Category</label>
-              <input
-                type="text"
-                placeholder="eg. laptop, camera etc"
-                value={categoryUpdate}
-                onChange={(e) => setCategoryUpdate(e.target.value)}
-              />
-            </div>
+              {/* Update Form */}
+              <form onSubmit={submitHandler}>
+                <h2>Manage</h2>
+                <div>
+                  <label>Name</label>
+                  <input type="text" value={nameUpdate} onChange={(e) => setNameUpdate(e.target.value)} />
+                </div>
+                <div>
+                  <label>Price</label>
+                  <input type="number" value={priceUpdate} onChange={(e) => setPriceUpdate(Number(e.target.value))} />
+                </div>
+                <div>
+                  <label>Stock</label>
+                  <input type="number" value={stockUpdate} onChange={(e) => setStockUpdate(Number(e.target.value))} />
+                </div>
+                <div>
+                  <label>Category</label>
+                  <input type="text" value={categoryUpdate} onChange={(e) => setCategoryUpdate(e.target.value)} />
+                </div>
+                <div>
+                  <label>Photo</label>
+                  <input type="file" onChange={changeImageHandler} />
+                </div>
 
-            <div>
-              <label>Photo</label>
-              <input type="file" onChange={changeImageHandler} />
-            </div>
-{/* // fixed it using the copilot  */}
-            {photoUpdate && <img src={photoUpdate} alt="New Image" />}
-            <button type="submit">Update</button>
-          </form>
-        </article>
+                {photoUpdate && <img src={photoUpdate} alt="New Image" />}
+                <button type="submit">Update</button>
+              </form>
+            </article>
           </>
-        )
-       }
+        )}
       </main>
     </div>
   );

@@ -19,6 +19,7 @@ export type User = {
     photo: {
       url: string;
       public_id: string;
+      src: string
     }[];
     _id: string;
   };
