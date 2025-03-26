@@ -242,7 +242,7 @@ export const dashbordStats = TryCatch(async(req, res, next) => {
     });
 });
 
-// These controller functions are empty placeholders for future implementation
+// These controller functions are empty placeholders for future implementation let's see
 // ===========for the barchart ============================
 export const barChartStats = TryCatch(async(req, res, next) => {
     // Implementation pending
