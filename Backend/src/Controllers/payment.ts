@@ -6,27 +6,75 @@ import { stripe } from "../app.js";
 
 // STRIPE PAYMENT INTENT 
 
-export const  createPaymentIntent = TryCatch(async (req , res , next  ) => {
+// export const  createPaymentIntent = TryCatch(async (req , res , next  ) => {
 
-    const {amount} = req.body;
+//     const {amount} = req.body;
 
-    if(!amount){
-        return next (new ErrorHandler("Please enter the coupan code " , 400))
+//     if(!amount){
+//         return next (new ErrorHandler("Please enter the coupan code " , 400))
+//     }
+
+//     console.log("get the payment");
+
+//     const paytmentIntent = await stripe.paymentIntents.create({
+//         amount: Number(amount ) * 100,
+//         currency: "inr"
+//     })
+
+//     res.status(201).json({
+//         success: true,
+//         clientSecret: paytmentIntent.client_secret
+//     })
+// })
+
+
+export const createPaymentIntent = TryCatch(async (req, res, next) => {
+    console.log("createPaymentIntent called");
+    console.log("Request body:", req.body);
+
+    const { amount } = req.body;
+
+    if (!amount) {
+        console.log("No amount provided");
+        return next(new ErrorHandler("Please provide an amount", 400));
     }
 
-    const paytmentIntent = await stripe.paymentIntents.create({
-        amount: Number(amount ) * 100,
-        currency: "inr"
-    })
+    try {
+        console.log("Creating payment intent");
+        const amountInPaise = Number(amount) * 100; // Convert to smallest currency unit
 
-    res.status(201).json({
-        success: true,
-        clientSecret: paytmentIntent.client_secret
-    })
-})
+        console.log("Amount to charge:", amountInPaise);
 
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: amountInPaise,
+            currency: "inr",
+            // Optional: Add more configuration if needed
+            // payment_method_types: ['card'], 
+        });
 
+        console.log("Payment intent created successfully");
+        console.log("Payment intent details:", {
+            id: paymentIntent.id,
+            client_secret: paymentIntent.client_secret
+        });
 
+        res.status(201).json({
+            success: true,
+            clientSecret: paymentIntent.client_secret
+        });
+    } catch (error) {
+        console.error("Detailed Stripe Error:", error);
+        
+        // More specific error handling
+        if (error instanceof stripe.errors.StripeError) {
+            console.error("Stripe Error Type:", error.type);
+            console.error("Stripe Error Code:", error.code);
+            console.error("Stripe Error Param:", error.param);
+        }
+
+        next(error);
+    }
+});
 
 
 // forr the couappan creation 

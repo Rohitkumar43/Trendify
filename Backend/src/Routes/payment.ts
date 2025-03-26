@@ -5,8 +5,8 @@ import { adminOnly } from "../middleware/auth.js";
 const app = express.Router();
 
 // create the payment intent 
-app.get('/create' , createPaymentIntent)
-// create the coupan
+app.post('/create' , createPaymentIntent)
+// create the coupan 
 app.post('/coupan/new', newCoupon);
 // check the discount 
 app.get('/discount' , applieddDiscount);

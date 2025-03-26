@@ -46,3 +46,17 @@
 @mixin baseShadow() {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.384);
 }
+
+
+@mixin btn($padding, $bg-color, $text-color) {
+  padding: $padding;
+  background-color: $bg-color;
+  color: $text-color;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
