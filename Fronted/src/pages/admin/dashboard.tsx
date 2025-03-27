@@ -8,16 +8,40 @@ import AdminSidebar from "../../components/admin/AdminSidebar";
 import { BarChart, DoughnutChart } from "../../components/admin/Charts";
 import Table from "../../components/admin/DashboardTable";
 import data from '../../assets/data.json'
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { useStatsQuery } from "../../redux/api/dashbordApi";
+import { CustomError } from "../../types/api-types";
+import toast from "react-hot-toast";
+import { Skeleton } from "../../components/loader";
 // import Loader from "../../components/admin/Loader";
 
 const userImg =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJxA5cTf-5dh5Eusm0puHbvAhOrCRPtckzjA&usqp";
 
 const Dashboard = () => {
+  // query to show the stats 
+  const {user} = useSelector((state: RootState) => state.useReducer);
+
+  // take the query state selector
+  const {isLoading , data , error , isError } = useStatsQuery(user?._id!);
+
+  // take the stats for mapping of the categories
+  
+  const stats = data?.stats!;
+
+  if (isError) {
+    const err = error as CustomError;
+    toast.error(err.data.message);
+  }
+
+
+
   return (
     <div className="admin-container">
       <AdminSidebar />
       <main className="dashboard">
+        {isLoading?<Skeleton/> : <>
         <div className="bar">
           <BsSearch />
           <input type="text" placeholder="Search for data, users, docs" />
@@ -29,26 +53,26 @@ const Dashboard = () => {
           <WidgetItem
             percent={40}
             amount={true}
-            value={340000}
+            value={stats.count.revenue}
             heading="Revenue"
             color="rgb(0, 115, 255)"
           />
           <WidgetItem
-            percent={-14}
-            value={400}
+            percent={stats.changePercent.user}
+            value={stats.count.user}
             color="rgb(0 198 202)"
             heading="Users"
           />
           <WidgetItem
-            percent={80}
-            value={23000}
+            percent={stats.changePercent.order}
+            value={stats.count.order}
             color="rgb(255 196 0)"
             heading="Transactions"
           />
 
           <WidgetItem
-            percent={30}
-            value={1000}
+            percent={stats.changePercent.product}
+            value={stats.count.product}
             color="rgb(76 0 255)"
             heading="Products"
           />
@@ -71,14 +95,18 @@ const Dashboard = () => {
             <h2>Inventory</h2>
 
             <div>
-              {data.categories.map((i) => (
-                <CategoryItem
-                  key={i.heading}
-                  value={i.value}
-                  heading={i.heading}
-                  color={`hsl(${i.value * 4}, ${i.value}%, 50%)`}
-                />
-              ))}
+              {stats.categoryCount.map((i) => {
+                const [heading , value] =Object.entries(i)[0];
+               // console.log(ad);
+                return (
+                  <CategoryItem
+                    key={heading}
+                    value={value}
+                    heading={heading}
+                    color={`hsl(${value * 4}, ${value}%, 50%)`}
+                  />
+                )
+              })}
             </div>
           </div>
         </section>
@@ -99,8 +127,9 @@ const Dashboard = () => {
               <BiMaleFemale />
             </p>
           </div>
-          <Table data={data.transaction} />
+          <Table data={stats.latestTransaction} />
         </section>
+        </>}
       </main>
     </div>
   );

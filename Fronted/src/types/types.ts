@@ -85,6 +85,8 @@ export type User = {
     status: string;
   };
   
+
+  // types for the stats 
   export type Stats = {
     categoryCount: Record<string, number>[];
     changePercent: CountAndChange;
