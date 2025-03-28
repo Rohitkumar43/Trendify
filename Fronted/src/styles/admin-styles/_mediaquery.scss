@@ -1,3 +1,6 @@
+@use "../admin-styles/mixin";
+@use "../variables" as *;
+
 @media screen and (width<= 1200px) {
   .admin-container {
     overflow: auto;
@@ -7,7 +10,7 @@
     .widget-container,
     .graph-container,
     .transaction-container {
-      justify-content: center;
+      @include mixin.flex(column, center, stretch);
       flex-wrap: wrap;
     }
     .graph-container {
@@ -60,11 +63,11 @@
     padding: 0;
 
     > aside {
-      @include flex(row, space-between, center);
+      @include mixin.flex(row, space-between, center);
       flex-wrap: wrap;
       box-shadow: none;
       > h2 {
-        @include heading;
+        @include mixin.heading;
         font-size: 1.2rem;
       }
     }

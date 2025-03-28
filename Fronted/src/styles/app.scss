@@ -1,3 +1,6 @@
+@use "admin-styles/mixin" as mixin;
+@use "variables" as *;
+
 // :root {
 //   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 //   line-height: 1.5;
@@ -26,168 +29,6 @@
 //   }
 // }
 
-// $color1: white;
-// $color2: rgb(46, 46, 46);
-// $color3: rgb(0, 104, 136);
-
-// .red {
-//   color: red;
-// }
-// .purple {
-//   color: rgb(47, 0, 255);
-// }
-// .green {
-//   color: rgb(0, 195, 0);
-// }
-
-// // all the css are importedd at a palce
-
-// @import "admin-styles/mixin";
-// @import "home";
-// @import "cart";
-// @import "shipping";
-// @import "login";
-// @import "search";
-// @import "product-details";
-// @import "footer";
-// @import "admin-styles/dashboard";
-// @import "admin-styles/products";
-// @import "admin-styles/chart";
-// @import "admin-styles/dashboardapp";
-// @import "admin-styles/mediaquery";
-
-// .container {
-//   max-width: 1367px;
-//   width: 100%;
-//   margin: auto;
-//   overflow: auto;
-//   > h1 {
-//     @include heading;
-//     margin: 1rem 0;
-//     text-align: left;
-//   }
-// }
-
-// .heading {
-//   @include heading;
-//   margin: 1rem 0;
-//   text-align: center;
-// }
-
-// .header {
-//   @include flex(row, flex-end, stretch, 1.2rem);
-//   padding: 1rem;
-//   a {
-//     color: $color2;
-//     letter-spacing: 2px;
-//     font-size: 1.2rem;
-
-//     &:hover {
-//       color: $color3;
-//     }
-//   }
-
-//   button {
-//     border: none;
-//     font-size: 1.2rem;
-//     cursor: pointer;
-//     background-color: transparent;
-//     &:hover {
-//       color: $color3;
-//     }
-//   }
-
-//   dialog {
-//     border: 1px solid #ccc;
-//     border-radius: 5px;
-//     padding: 10px;
-//     width: 100px;
-//     position: absolute;
-//     left: calc(100% - 100px);
-//     top: 8%;
-//     > div {
-//       @include flex(column, flex-start, center, 0.25rem);
-//     }
-//   }
-// }
-
-// .not-found {
-//   height: 80vh;
-//   @include flex(column);
-//   > svg {
-//     font-size: 5rem;
-//   }
-// }
-
-// .checkout-container {
-//   height: 80vh;
-//   width: 100%;
-//   margin: auto;
-//   @include flex;
-
-//   > form {
-//     @include flex(column, flex-start, stretch, 2rem);
-//     max-width: 400px;
-//     box-shadow: 0 0 10px rgb(0 0 0 / 10%);
-//     padding: 4rem;
-//     border-radius: 6px;
-//     > button {
-//       @include btn(1rem, $color3, $color1);
-//       width: 100%;
-//       font-size: 1.1rem;
-//     }
-//   }
-// }
-
-// // css for the not found page 
-
-// .not-found{
-//   height: 80vh;
-//   @include flex(column);
-//   >svg{
-//     font-size: 5rem;
-//   }
-// }
-
-// .admin-container {
-//   @include grid(1fr 4fr, 2rem);
-//   height: 100vh;
-//   background-color: rgb(247, 247, 247);
-//   > aside {
-//     width: 100%;
-//     background-color: white;
-//     padding: 1rem;
-//     z-index: 10;
-//     overflow-y: auto;
-//     &::-webkit-scrollbar {
-//       display: none;
-//     }
-
-//     > div {
-//       margin: 2rem 1rem;
-//       > h5 {
-//         @include heading(2px);
-//         opacity: 0.8;
-//         margin: 1rem 0;
-//       }
-//       > ul {
-//         @include flex(column, unset, unset, 0.5rem);
-//         list-style: none;
-//         > li {
-//           padding: 0.5rem 1rem;
-//           border-radius: 10px;
-//           a {
-//             color: rgba(0, 0, 0, 0.825);
-//             @include flex(row, unset);
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
-// Use @use at the very top
-@use "./admin-styles/mixin" as *;
 @use "home";
 @use "cart";
 @use "shipping";
@@ -304,7 +145,7 @@ button {
 // Fixed Duplicate Not Found Class
 .not-found {
   height: 80vh;
-  @include flex(column);
+  @include mixin.flex(column);
   > svg {
     font-size: 5rem;
   }
@@ -314,16 +155,16 @@ button {
   height: 80vh;
   width: 100%;
   margin: auto;
-  @include flex;
+  @include mixin.flex;
 
   > form {
-    @include flex(column, flex-start, stretch, 2rem);
+    @include mixin.flex(column, flex-start, stretch, 2rem);
     max-width: 400px;
     box-shadow: 0 0 10px rgb(0 0 0 / 10%);
     padding: 4rem;
     border-radius: 6px;
     > button {
-      @include btn(1rem, $color3, $color1);
+      @include mixin.btn(1rem, $color3, $color1);
       width: 100%;
       font-size: 1.1rem;
     }
@@ -353,7 +194,7 @@ button {
 
 
 .admin-container {
-  @include grid(1fr 4fr, 2rem);
+  @include mixin.grid(1fr 4fr, 2rem);
   height: 100vh;
   background-color: rgb(247, 247, 247);
   > aside {
@@ -369,19 +210,19 @@ button {
     > div {
       margin: 2rem 1rem;
       > h5 {
-        @include heading(2px);
+        @include mixin.heading(2px);
         opacity: 0.8;
         margin: 1rem 0;
       }
       > ul {
-        @include flex(column, unset, unset, 0.5rem);
+        @include mixin.flex(column, unset, unset, 0.5rem);
         list-style: none;
         > li {
           padding: 0.5rem 1rem;
           border-radius: 10px;
           a {
             color: rgba(0, 0, 0, 0.825);
-            @include flex(row, unset);
+            @include mixin.flex(row, unset);
           }
         }
       }
@@ -455,7 +296,7 @@ button {
 }
 
 .table-pagination {
-  @include flex;
+  @include mixin.flex;
   padding: 2rem;
   > button {
     padding: 0.5rem 1rem;
@@ -475,7 +316,7 @@ button {
 #hamburger {
   display: grid;
   place-items: center;
-  @include square(3rem);
+  @include mixin.square(3rem);
   border: none;
   outline: none;
   cursor: pointer;
@@ -505,9 +346,9 @@ button {
 .loader {
   width: 100%;
   height: 85vh;
-  @include flex;
+  @include mixin.flex;
   > div {
-    @include square(10rem);
+    @include mixin.square(10rem);
     border-radius: 50%;
     border-top: 1rem solid rgb(43, 43, 43);
     border-left: 1rem solid rgb(43, 43, 43);

@@ -1,3 +1,6 @@
+@use "admin-styles/mixin" as mixin;
+@use "variables" as *;
+
 .home {
     padding: 2rem 5%;
     display: flex;
@@ -16,7 +19,7 @@
     }
   
     > div {
-      @include flex;
+      @include mixin.flex;
       align-items: stretch;
       margin: 2rem 0;
       gap: 5rem;
@@ -26,9 +29,9 @@
         // border: 1px solid $color3;
         flex: none;
         h1 {
-          @include heading(1px);
+          @include mixin.heading(1px);
           margin-bottom: 3rem;
-          @include flex(row, space-between, center);
+          @include mixin.flex(row, space-between, center);
           &::before {
             content: "";
             width: 3px;
@@ -40,7 +43,7 @@
         }
   
         > ul {
-          @include flex(column, flex-start, flex-start);
+          @include mixin.flex(column, flex-start, flex-start);
           list-style: none;
           > li {
             cursor: pointer;
@@ -55,9 +58,9 @@
     }
   
     > h1 {
-      @include heading(1px);
+      @include mixin.heading(1px);
       margin-top: 3rem;
-      @include flex(row, space-between, center);
+      @include mixin.flex(row, space-between, center);
     }
   
     .findmore {
@@ -82,7 +85,7 @@
     height: 25rem;
     padding: 1rem;
     flex: none;
-    @include flex(column, flex-start, center, 4px);
+    @include mixin.flex(column, flex-start, center, 4px);
     position: relative;
     background-color: white;
   
@@ -91,7 +94,7 @@
     }
   
     img {
-      @include square(calc(18.75rem - 3rem));
+      @include mixin.square(calc(18.75rem - 3rem));
       object-fit: cover;
       margin: 1rem;
     }
@@ -104,15 +107,15 @@
     > div {
       opacity: 0;
       position: absolute;
-      @include square(100%);
+      @include mixin.square(100%);
       top: 0;
       left: 0;
       background-color: #0000006b;
-      @include flex;
+      @include mixin.flex;
       button,
       a {
-        @include flex;
-        @include square(3rem);
+        @include mixin.flex;
+        @include mixin.square(3rem);
         border-radius: 100%;
         border: none;
         background-color: $color3;
@@ -132,7 +135,7 @@
     height: 100vh;
     position: relative;
     overflow: hidden;
-    @include flex(column);
+    @include mixin.flex(column);
   
     .cover-video-overlay {
       width: 100%;
@@ -185,14 +188,14 @@
       max-width: 1367px;
       margin: 0 auto;
   
-      @include grid(1fr 1fr 1fr, 0, auto);
+      @include mixin.grid(1fr 1fr 1fr, 0, auto);
       list-style: none;
       > li {
-        @include flex(column);
+        @include mixin.flex(column);
         > div {
           background-color: black;
-          @include square(5rem);
-          @include flex;
+          @include mixin.square(5rem);
+          @include mixin.flex;
           border-radius: 50%;
           border: 0.6rem solid gray;
           transition: all 0.3s ease;
@@ -207,7 +210,7 @@
         }
   
         > section {
-          @include flex(column);
+          @include mixin.flex(column);
           text-align: center;
           gap: 0;
           margin-top: 1rem;
@@ -237,13 +240,13 @@
       h2 {
         color: #333; // Dark text color for the title
         text-align: center;
-        @include heading;
+        @include mixin.heading;
         margin-bottom: 4rem;
         font-size: 2rem;
       }
   
       div {
-        @include flex;
+        @include mixin.flex;
         flex-wrap: wrap;
         gap: 3rem;
   

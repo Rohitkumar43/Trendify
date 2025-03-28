@@ -9,24 +9,23 @@ const initialState: UserReducerInitialState = {
 };
 
 // make a reducer 
-
-export const useReducer = createSlice({
-    name: 'useReducer',
+export const userReducer = createSlice({
+    name: 'userReducer',
     initialState,
     reducers: {
-        /// make the reeducer for the state
+        /// make the reducer for the state
         // user exist 
-        userExist: (state , action: PayloadAction<User>) => {
-            state.loading = false,
-            state.user = action.payload
+        userExist: (state, action: PayloadAction<User>) => {
+            state.loading = false;
+            state.user = action.payload;
         },
         // not exit user
         userNotExist: (state) => {
-            state.loading = false,
-            state.user = null
+            state.loading = false;
+            state.user = null;
         }
     }
 });
 
-
-export const {userExist , userNotExist} = useReducer.actions
+export const { userExist, userNotExist } = userReducer.actions;
+export default userReducer.reducer;

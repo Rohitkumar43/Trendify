@@ -6,7 +6,6 @@ import { useLatestProductsQuery } from "../redux/api/productAPI";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { CartItem } from "../types/types";
-import videoCover from "../assets/videos/cover.mp4";
 import { FaAnglesDown, FaHeadset } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { Slider } from "6pp";
@@ -94,42 +93,22 @@ import { Slider } from "6pp";
 //   },
 // ];
 
-// const banners = [
-//   "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253445/rmbjpuzctjdbtt8hewaz.png",
-//   "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/ticeufjqvf6napjhdiee.png",
-// ];
-// const categories = [
-//   "Electronics",
-//   "Mobiles",
-//   "Laptops",
-//   "Books",
-//   "Fashion",
-//   "Appliances",
-//   "Furniture",
-//   "Home Decor",
-//   "Grocery",
-//   "Beauty",
-//   "Toys",
-//   "Fitness",
-// ];
+const categories = [
+  "Electronics",
+  "Fashion",
+  "Home & Living",
+  "Beauty",
+  "Books",
+  "Sports",
+  "Toys",
+  "Automotive"
+];
 
-// const services = [
-//   {
-//     icon: <TbTruckDelivery />,
-//     title: "FREE AND FAST DELIVERY",
-//     description: "Free delivery for all orders over $200",
-//   },
-//   {
-//     icon: <LuShieldCheck />,
-//     title: "SECURE PAYMENT",
-//     description: "100% secure payment",
-//   },
-//   {
-//     icon: <FaHeadset />,
-//     title: "24/7 SUPPORT",
-//     description: "Get support 24/7",
-//   },
-// ];
+const banners = [
+  "https://example.com/banner1.jpg",
+  "https://example.com/banner2.jpg",
+  "https://example.com/banner3.jpg"
+];
 
 const Home = () => {
   // this is coming from the rtk query 4 of the product API 
@@ -210,7 +189,7 @@ const Home = () => {
 
       <article className="cover-video-container">
         <div className="cover-video-overlay"></div>
-        <video autoPlay loop muted src={videoCover} />
+        {/* Removed video element since we don't have the video file */}
         <div className="cover-video-content">
           <motion.h2
             initial={{ x: -100, opacity: 0 }}
@@ -250,7 +229,7 @@ const Home = () => {
         <div>
           <h2>Our Clients</h2>
           <div>
-            {clients.map((client, i) => (
+            {/* {clients.map((client, i) => (
               <motion.img
                 initial={{
                   opacity: 0,
@@ -268,10 +247,10 @@ const Home = () => {
                 alt={client.alt}
                 key={i}
               />
-            ))}
+            ))} */}
           </div>
 
-          <motion.p
+          {/* <motion.p
             initial={{ opacity: 0, y: -100 }}
             whileInView={{
               opacity: 1,
@@ -282,7 +261,7 @@ const Home = () => {
             }}
           >
             Trusted By 100+ Companies in 30+ countries
-          </motion.p>
+          </motion.p> */}
         </div>
       </article>
 
@@ -296,7 +275,7 @@ const Home = () => {
 
       <article className="our-services">
         <ul>
-          {services.map((service, i) => (
+          {/* {services.map((service, i) => (
             <motion.li
               initial={{ opacity: 0, y: -100 }}
               whileInView={{
@@ -314,8 +293,11 @@ const Home = () => {
                 <p>{service.title}</p>
               </section>
             </motion.li>
-          ))}
-        </ul>
+          ))} */}
+const banners = [
+  "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253445/rmbjpuzctjdbtt8hewaz.png",
+  "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/ticeufjqvf6napjhdiee.png"
+];        </ul>
       </article>
     </>
   );
