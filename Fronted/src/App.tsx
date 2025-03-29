@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import Loader from './components/loader';
@@ -8,7 +8,7 @@ import { auth } from './firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { userExist, userNotExist } from './redux/reducer/userReducer';
 import { getUser } from './redux/api/userApi';
-import { UserReducerInitialState } from './types/reducer-types';
+import { RootState } from './redux/store';
 import ProtectedRoute from './components/protected-routes';
 import Login from './pages/login';
 import Header from './components/header';
@@ -42,9 +42,7 @@ const ProductManagement = lazy(() => import('./pages/admin/management/productman
 const TransactionManagement = lazy(() => import('./pages/admin/management/transactionmanagement'));
 
 const App = () => {
-  const { user, loading } = useSelector(
-    (state: { userReducer: UserReducerInitialState }) => state.userReducer
-  );
+  const { user, loading } = useSelector((state: RootState) => state.user);
   
   const dispatch = useDispatch();
 

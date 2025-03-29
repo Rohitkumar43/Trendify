@@ -1,30 +1,24 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { UserReducerInitialState } from "../../types/reducer-types";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { User } from "../../types/types";
 
-
-const initialState: UserReducerInitialState = {
-    user: null,
-    loading: true,
+const initialState: { user: User | null; loading: boolean } = {
+  user: null,
+  loading: true,
 };
 
-// make a reducer 
 export const userReducer = createSlice({
-    name: 'userReducer',
-    initialState,
-    reducers: {
-        /// make the reducer for the state
-        // user exist 
-        userExist: (state, action: PayloadAction<User>) => {
-            state.loading = false;
-            state.user = action.payload;
-        },
-        // not exit user
-        userNotExist: (state) => {
-            state.loading = false;
-            state.user = null;
-        }
-    }
+  name: "userReducer",
+  initialState,
+  reducers: {
+    userExist: (state, action: PayloadAction<User>) => {
+      state.loading = false;
+      state.user = action.payload;
+    },
+    userNotExist: (state) => {
+      state.loading = false;
+      state.user = null;
+    },
+  },
 });
 
 export const { userExist, userNotExist } = userReducer.actions;

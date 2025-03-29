@@ -1,65 +1,98 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
-import { auth } from "../firebase";
+import { auth, googleProvider } from "../firebase";
 import { getUser, useLoginMutation } from "../redux/api/userApi";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import { MessageResponse } from "../types/api-types";
 import { userExist, userNotExist } from "../redux/reducer/userReducer";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+interface MessageResponse {
+  message: string;
+  user?: any;
+}
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [gender, setGender] = useState("");
   const [date, setDate] = useState("");
 
   const [login] = useLoginMutation();
 
-  // this will handle the google auth and the authentication 
-
-
   const loginHandler = async () => {
     try {
-      const provider = new GoogleAuthProvider();
-      const { user } = await signInWithPopup(auth, provider);
+      if (!gender || !date) {
+        toast.error("Please select gender and date of birth");
+        return;
+      }
 
-      console.log({
-        name: user.displayName!,
-        email: user.email!,
-        photo: user.photoURL!,
-        gender,
-        role: "user",
-        dob: date,
-        _id: user.uid,
-      });
+      const { user } = await signInWithPopup(auth, googleProvider);
 
-      const res = await login({
-        name: user.displayName!,
-        email: user.email!,
-        photo: user.photoURL!,
-        gender,
-        role: "user",
-        dob: date,
-        _id: user.uid,
-      });
+      if (!user) {
+        toast.error("Failed to get user information");
+        return;
+      }
 
-      if ("data" in res) {
-        toast.success(res.data.message);
-        const data = await getUser(user.uid);
-        dispatch(userExist(data?.user!));
-      } else {
-        const error = res.error as FetchBaseQueryError;
-        const message = (error.data as MessageResponse).message;
-        toast.error(message);
+      try {
+        const res = await login({
+          name: user.displayName!,
+          email: user.email!,
+          photo: user.photoURL!,
+          gender,
+          role: "user",
+          dob: date,
+          _id: user.uid,
+        });
+
+        if ("data" in res) {
+          const data = res.data as MessageResponse;
+          toast.success(data.message);
+          
+          if (data.user) {
+            dispatch(userExist(data.user));
+            navigate("/");
+          } else {
+            // If no user data in response, try to fetch it
+            const userData = await getUser(user.uid);
+            if (userData?.user) {
+              dispatch(userExist(userData.user));
+              navigate("/");
+            } else {
+              toast.error("Failed to get user data");
+              dispatch(userNotExist());
+            }
+          }
+        } else {
+          const error = res.error as FetchBaseQueryError;
+          const message = (error.data as MessageResponse).message;
+          toast.error(message || "Login failed");
+          dispatch(userNotExist());
+        }
+      } catch (error) {
+        console.error("API Error:", error);
+        toast.error("Failed to communicate with server");
         dispatch(userNotExist());
       }
-    } catch (error) {
-      toast.error("Sign In Fail");
+    } catch (error: any) {
+      console.error("Login error:", error);
+      if (error.code === "auth/operation-not-allowed") {
+        toast.error("Google Sign-In is not enabled. Please contact support.");
+      } else if (error.code === "auth/popup-blocked") {
+        toast.error("Popup was blocked. Please allow popups for this site.");
+      } else if (error.code === "auth/cancelled-popup-request") {
+        toast.error("Login cancelled");
+      } else if (error.code === "auth/unauthorized-domain") {
+        toast.error("This domain is not authorized for Google Sign-In");
+      } else {
+        toast.error(error.message || "Sign In Failed");
+      }
+      dispatch(userNotExist());
     }
   };
 
- 
   return (
     <div className="login">
       <main>
@@ -75,7 +108,7 @@ const Login = () => {
         </div>
 
         <div>
-          <label>Date of birth</label>
+          <label>Date of Birth</label>
           <input
             type="date"
             value={date}
