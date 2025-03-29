@@ -94,6 +94,12 @@ export const getAllProducts = TryCatch(
 
 // Get all products (admin)
 export const getAdminProducts = TryCatch(async (req, res, next) => {
+  const { id } = req.query;
+  
+  if (!id) {
+    return next(new ErrorHandler("Please provide user ID", 400));
+  }
+
   let products;
   
   if (myCache.has("admin-products"))

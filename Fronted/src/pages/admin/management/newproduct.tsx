@@ -1,96 +1,57 @@
-import { ChangeEvent, useState, FormEvent } from "react";
-import AdminSidebar from "../../../components/admin/AdminSidebar";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../redux/store";
-import { responseToast } from "../../../utils/feature";
-import { useNewProductMutation } from "../../../redux/api/productAPI";
 import { useNavigate } from "react-router-dom";
+import { useNewProductMutation } from "../../../redux/api/productAPI";
+import { responseToast } from "../../../utils/feature";
+import { RootState } from "../../../redux/store";
+import AdminSidebar from "../../../components/admin/AdminSidebar";
 
 const NewProduct = () => {
   const { user } = useSelector((state: RootState) => state.user);
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
-  const [price, setPrice] = useState<number>(1000);
-  const [stock, setStock] = useState<number>(1);
-  const [photos, setPhotos] = useState<File[]>([]);
-  const [description, setDescription] = useState<string>("");
-
-  const [newProduct] = useNewProductMutation();
   const navigate = useNavigate();
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setPhotos(files);
+  const [name, setName] = useState<string>("");
+  const [price, setPrice] = useState<number>(0);
+  const [stock, setStock] = useState<number>(0);
+  const [photo, setPhoto] = useState<File>();
+
+  const [newProduct] = useNewProductMutation();
+
+  const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhoto(file);
+    }
   };
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    try {
-      if (!name || !price || stock < 0 || !category || !description) {
-        setIsLoading(false);
-        responseToast(
-          { data: { success: false, message: "Please fill all fields" } },
-          navigate,
-          "/admin/products"
-        );
-        return;
-      }
-
-      if (photos.length === 0) {
-        setIsLoading(false);
-        responseToast(
-          { data: { success: false, message: "Please add at least one photo" } },
-          navigate,
-          "/admin/products"
-        );
-        return;
-      }
-
-      const formData = new FormData();
-      formData.set("name", name);
-      formData.set("description", description);
-      formData.set("price", price.toString());
-      formData.set("stock", stock.toString());
-      formData.set("category", category);
-
-      photos.forEach((file) => {
-        formData.append("photos", file);
-      });
-
-      const res = await newProduct({ id: user?._id!, formData }).unwrap();
-
-      if (res.success) {
-        responseToast(
-          { data: { success: true, message: res.message } },
-          navigate,
-          "/admin/products"
-        );
-      } else {
-        responseToast(
-          { data: { success: false, message: res.message || "Error creating product" } },
-          navigate,
-          "/admin/products"
-        );
-      }
-    } catch (error: any) {
-      console.error("Error creating product:", error);
-      responseToast(
-        { 
-          data: { 
-            success: false, 
-            message: error.data?.message || "Failed to create product" 
-          } 
-        },
-        navigate,
-        "/admin/products"
-      );
+    if (!user?._id) {
+      responseToast("Please login first", false);
+      return;
     }
 
-    setIsLoading(false);
+    if (!name || !price || !stock || !photo) {
+      responseToast("Please fill all fields", false);
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("name", name);
+    formData.set("price", price.toString());
+    formData.set("stock", stock.toString());
+    formData.set("photo", photo);
+
+    try {
+      await newProduct({
+        id: user._id,
+        formData,
+      }).unwrap();
+      responseToast("Product Created Successfully", true, navigate, "/admin/product");
+    } catch (error) {
+      responseToast("Error Creating Product", false);
+    }
   };
 
   return (
@@ -131,48 +92,15 @@ const NewProduct = () => {
               />
             </div>
             <div>
-              <label>Category</label>
-              <input
-                required
-                type="text"
-                placeholder="Category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Description</label>
-              <textarea
-                required
-                placeholder="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <label>Photos</label>
+              <label>Photo</label>
               <input
                 required
                 type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageChange}
+                onChange={changeImageHandler}
               />
             </div>
-            {photos.length > 0 && (
-              <div className="preview">
-                {photos.map((photo, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(photo)}
-                    alt={`Preview ${index + 1}`}
-                  />
-                ))}
-              </div>
-            )}
-            <button type="submit" disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create"}
-            </button>
+
+            <button type="submit">Create</button>
           </form>
         </article>
       </main>

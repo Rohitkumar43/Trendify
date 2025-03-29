@@ -8,22 +8,6 @@ export type User = {
     _id: string;
   };
   
-  export type Product = {
-    name: string;
-    price: number;
-    stock: number;
-    category: string;
-    ratings: number;
-    numOfReviews: number;
-    description: string;
-    photo: {
-      url: string;
-      public_id: string;
-      src: string
-    }[];
-    _id: string;
-  };
-  
   export type Review = {
     rating: number;
     comment: string;

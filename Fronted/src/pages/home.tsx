@@ -28,7 +28,7 @@ const banners = [
 
 const Home = () => {
   // this is coming from the rtk query 4 of the product API 
-  const { data, isError, isLoading } = useLatestProductsQuery("");
+  const { data: latestProducts, isLoading, isError } = useLatestProductsQuery();
   const dispatch = useDispatch();
 
   // fxn to add the items in the cart 
@@ -92,7 +92,7 @@ const Home = () => {
               ))}
             </>
           ) : (
-            data?.products.map((i) => (
+            latestProducts?.products.map((i) => (
               <ProductCard
                 key={i._id}
                 productId={i._id}
@@ -100,7 +100,7 @@ const Home = () => {
                 price={i.price}
                 stock={i.stock}
                 handler={addToCartHandler}
-                photo={i.photo}
+                photo={i.photos[0].url}
               />
             ))
           )}

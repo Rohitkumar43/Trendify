@@ -18,15 +18,15 @@ export const productAPI = createApi({
   }),
   tagTypes: ["product"],
   endpoints: (builder) => ({
-    latestProducts: builder.query<AllProductsResponse, string>({
+    latestProducts: builder.query<AllProductsResponse, void>({
       query: () => "latest",
       providesTags: ["product"],
     }),
     allProducts: builder.query<AllProductsResponse, string>({
-      query: (id) => `admin-products?id=${id}`,
+      query: (id) => `admin-prd/${id}`,
       providesTags: ["product"],
     }),
-    categories: builder.query<CategoriesResponse, string>({
+    categories: builder.query<CategoriesResponse, void>({
       query: () => `categories`,
       providesTags: ["product"],
     }),
@@ -41,12 +41,12 @@ export const productAPI = createApi({
       providesTags: ["product"],
     }),
     productDetails: builder.query<ProductResponse, string>({
-      query: (id) => id,
+      query: (id) => `${id}`,
       providesTags: ["product"],
     }),
     newProduct: builder.mutation<MessageResponse, NewProductRequest>({
       query: ({ formData, id }) => ({
-        url: `new?id=${id}`,
+        url: `new/${id}`,
         method: "POST",
         body: formData,
       }),
@@ -54,7 +54,7 @@ export const productAPI = createApi({
     }),
     updateProduct: builder.mutation<MessageResponse, UpdateProductRequest>({
       query: ({ formData, userId, productId }) => ({
-        url: `${productId}?id=${userId}`,
+        url: `${productId}/${userId}`,
         method: "PUT",
         body: formData,
       }),
@@ -62,7 +62,7 @@ export const productAPI = createApi({
     }),
     deleteProduct: builder.mutation<MessageResponse, DeleteProductRequest>({
       query: ({ userId, productId }) => ({
-        url: `${productId}?id=${userId}`,
+        url: `${productId}/${userId}`,
         method: "DELETE",
       }),
       invalidatesTags: ["product"],
@@ -71,12 +71,12 @@ export const productAPI = createApi({
 });
 
 export const {
+  useProductDetailsQuery,
   useLatestProductsQuery,
   useAllProductsQuery,
   useCategoriesQuery,
   useSearchProductsQuery,
   useNewProductMutation,
-  useProductDetailsQuery,
   useUpdateProductMutation,
   useDeleteProductMutation,
 } = productAPI;

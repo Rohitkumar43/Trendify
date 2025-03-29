@@ -7,14 +7,17 @@ export type ResType = {
 };
 
 export const responseToast = (
-  response: any,
-  navigate: NavigateFunction,
-  url: string
+  message: string,
+  success: boolean,
+  navigate?: NavigateFunction,
+  url?: string
 ) => {
-  if (response.data.success) {
-    toast.success(response.data.message);
-    navigate(url);
+  if (success) {
+    toast.success(message);
+    if (navigate && url) {
+      navigate(url);
+    }
   } else {
-    toast.error(response.data.message);
+    toast.error(message);
   }
 };

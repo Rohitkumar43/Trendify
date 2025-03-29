@@ -1,97 +1,102 @@
 import {
+  useTable,
+  Column,
+  TableOptions,
+  useSortBy,
+  TableState,
+  UseTableColumnProps,
+} from "react-table";
+import {
   AiOutlineSortAscending,
   AiOutlineSortDescending,
 } from "react-icons/ai";
-import {
-  Column,
-  usePagination,
-  useSortBy,
-  useTable,
-  TableOptions,
-} from "react-table";
+import { useMemo } from "react";
 
-function TableHOC<T extends Object>(
+interface SortableColumn<T extends object> extends UseTableColumnProps<T> {
+  getSortByToggleProps: () => any;
+  isSorted: boolean;
+  isSortedDesc: boolean;
+}
+
+function TableHOC<T extends object>(
   columns: Column<T>[],
   data: T[],
   containerClassname: string,
   heading: string,
   showPagination: boolean = false
-) {
+): () => JSX.Element {
   return function HOC() {
+    const memoizedColumns = useMemo(() => columns, []);
+    const memoizedData = useMemo(() => data, []);
+
     const options: TableOptions<T> = {
-      columns,
-      data,
+      columns: memoizedColumns,
+      data: memoizedData,
       initialState: {
-        pageSize: 6,
-      },
+        pageIndex: 0,
+        pageSize: showPagination ? 6 : memoizedData.length,
+      } as Partial<TableState<T>>,
     };
 
     const {
       getTableProps,
       getTableBodyProps,
       headerGroups,
-      page,
+      rows,
       prepareRow,
-      nextPage,
-      pageCount,
-      state: { pageIndex },
-      previousPage,
-      canNextPage,
-      canPreviousPage,
-    } = useTable(options, useSortBy, usePagination);
+    } = useTable(options, useSortBy);
 
     return (
       <div className={containerClassname}>
         <h2 className="heading">{heading}</h2>
-
         <table className="table" {...getTableProps()}>
           <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                    {column.render("Header")}
-                    {column.isSorted && (
-                      <span>
-                        {" "}
-                        {column.isSortedDesc ? (
-                          <AiOutlineSortDescending />
-                        ) : (
-                          <AiOutlineSortAscending />
+            {headerGroups.map((headerGroup) => {
+              const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+              return (
+                <tr key={key} {...headerGroupProps}>
+                  {headerGroup.headers.map((column) => {
+                    const sortableColumn = column as unknown as SortableColumn<T>;
+                    const { key: headerKey, ...headerProps } = column.getHeaderProps(sortableColumn.getSortByToggleProps());
+                    return (
+                      <th key={headerKey} {...headerProps}>
+                        {column.render("Header")}
+                        {sortableColumn.isSorted && (
+                          <span>
+                            {" "}
+                            {sortableColumn.isSortedDesc ? (
+                              <AiOutlineSortDescending />
+                            ) : (
+                              <AiOutlineSortAscending />
+                            )}
+                          </span>
                         )}
-                      </span>
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
+                      </th>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
+            {rows.map((row) => {
               prepareRow(row);
-
+              const { key: rowKey, ...rowProps } = row.getRowProps();
               return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  ))}
+                <tr key={rowKey} {...rowProps}>
+                  {row.cells.map((cell) => {
+                    const { key: cellKey, ...cellProps } = cell.getCellProps();
+                    return (
+                      <td key={cellKey} {...cellProps}>
+                        {cell.render("Cell")}
+                      </td>
+                    );
+                  })}
                 </tr>
               );
             })}
           </tbody>
         </table>
-
-        {showPagination && (
-          <div className="table-pagination">
-            <button disabled={!canPreviousPage} onClick={previousPage}>
-              Prev
-            </button>
-            <span>{`${pageIndex + 1} of ${pageCount}`}</span>
-            <button disabled={!canNextPage} onClick={nextPage}>
-              Next
-            </button>
-          </div>
-        )}
       </div>
     );
   };
