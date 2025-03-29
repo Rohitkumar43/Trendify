@@ -11,32 +11,35 @@ export interface NewUserRequestBody {
 
 export interface NewProductRequestBody {
   name: string;
-  category: string;
   price: number;
   stock: number;
+  category: string;
   description: string;
 }
 
 export type ControllerType = (
-  req: Request<any>,
+  req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void>;
+) => Promise<void | Response>;
 
-export type SearchRequestQuery = {
+export interface SearchRequestQuery {
   search?: string;
   price?: string;
   category?: string;
   sort?: string;
   page?: string;
-};
+  limit?: string;
+}
 
 export interface BaseQuery {
   name?: {
     $regex: string;
     $options: string;
   };
-  price?: { $lte: number };
+  price?: {
+    $lte: number;
+  };
   category?: string;
 }
 

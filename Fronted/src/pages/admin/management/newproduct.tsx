@@ -1,77 +1,96 @@
 import { ChangeEvent, useState, FormEvent } from "react";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { useSelector } from "react-redux";
-import { UserReducerInitialState } from "../../../types/reducer-types";
+import { RootState } from "../../../redux/store";
 import { responseToast } from "../../../utils/feature";
 import { useNewProductMutation } from "../../../redux/api/productAPI";
 import { useNavigate } from "react-router-dom";
-import { useFileHandler } from "6pp";
 
 const NewProduct = () => {
-  // Redux setup
-  const { user } = useSelector(
-    (state: { useReducer: UserReducerInitialState }) => state.useReducer
-  );
+  const { user } = useSelector((state: RootState) => state.user);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [category, setCategory] = useState<string>("");
   const [price, setPrice] = useState<number>(1000);
   const [stock, setStock] = useState<number>(1);
-  const [photoPrev, setPhotoPrev] = useState<string>("");
+  const [photos, setPhotos] = useState<File[]>([]);
   const [description, setDescription] = useState<string>("");
 
   const [newProduct] = useNewProductMutation();
   const navigate = useNavigate();
 
-  // Use the file handler hook
-  const photo = useFileHandler("multiple", 10, 5);
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setPhotos(files);
+  };
 
-  // Handle form submission
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      if (!name || !price || stock < 0 || !category) return;
 
-      if (!photo.file || photo.file.length === 0) return;
+    try {
+      if (!name || !price || stock < 0 || !category || !description) {
+        setIsLoading(false);
+        responseToast(
+          { data: { success: false, message: "Please fill all fields" } },
+          navigate,
+          "/admin/products"
+        );
+        return;
+      }
+
+      if (photos.length === 0) {
+        setIsLoading(false);
+        responseToast(
+          { data: { success: false, message: "Please add at least one photo" } },
+          navigate,
+          "/admin/products"
+        );
+        return;
+      }
 
       const formData = new FormData();
-
       formData.set("name", name);
       formData.set("description", description);
       formData.set("price", price.toString());
       formData.set("stock", stock.toString());
       formData.set("category", category);
 
-      photo.file.forEach((file) => {
+      photos.forEach((file) => {
         formData.append("photos", file);
       });
 
-      const res = await newProduct({ id: user?._id!, formData });
+      const res = await newProduct({ id: user?._id!, formData }).unwrap();
 
-      responseToast(res, navigate, "/admin/product");
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
+      if (res.success) {
+        responseToast(
+          { data: { success: true, message: res.message } },
+          navigate,
+          "/admin/products"
+        );
+      } else {
+        responseToast(
+          { data: { success: false, message: res.message || "Error creating product" } },
+          navigate,
+          "/admin/products"
+        );
+      }
+    } catch (error: any) {
+      console.error("Error creating product:", error);
+      responseToast(
+        { 
+          data: { 
+            success: false, 
+            message: error.data?.message || "Failed to create product" 
+          } 
+        },
+        navigate,
+        "/admin/products"
+      );
     }
-  };
 
-  // Handle image change
-  const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const file: File | undefined = e.target.files?.[0];
-
-    const reader: FileReader = new FileReader();
-
-    if (file) {
-      reader.readAsDataURL(file);
-      reader.onloadend = () => {
-        if (typeof reader.result === "string") {
-          setPhotoPrev(reader.result);
-        }
-      };
-    }
+    setIsLoading(false);
   };
 
   return (
@@ -116,7 +135,7 @@ const NewProduct = () => {
               <input
                 required
                 type="text"
-                placeholder="eg. laptop, camera etc"
+                placeholder="Category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               />
@@ -124,23 +143,33 @@ const NewProduct = () => {
             <div>
               <label>Description</label>
               <textarea
-                placeholder="Product description"
+                required
+                placeholder="Description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <div>
-              <label>Photo</label>
-              <input 
-                type="file" 
-                onChange={photo.changeHandler} 
-                multiple 
-                required 
+              <label>Photos</label>
+              <input
+                required
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
               />
             </div>
-            {photo.preview && photo.preview.map((prev, index) => (
-              <img key={index} src={prev} alt={`Preview ${index}`} />
-            ))}
+            {photos.length > 0 && (
+              <div className="preview">
+                {photos.map((photo, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(photo)}
+                    alt={`Preview ${index + 1}`}
+                  />
+                ))}
+              </div>
+            )}
             <button type="submit" disabled={isLoading}>
               {isLoading ? "Creating..." : "Create"}
             </button>

@@ -3,119 +3,122 @@ import { TryCatch } from "../middleware/error.js";
 import { Product } from "../models/product.js";
 import { BaseQuery, NewProductRequestBody, SearchRequestQuery } from "../Types/types.js";
 import ErrorHandler from "../utils/utility-class.js";
-import { Request, Response, NextFunction, response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { myCache } from "../app.js";
 import { invalidateCache } from "../utils/feature.js";
 
-
-// to create the new product 
+// Create new product
 export const newProduct = TryCatch(
   async (req: Request<{}, {}, NewProductRequestBody>, res: Response, next: NextFunction) => {
-    // Debug logging
-    console.log('Received body:', req.body);
-    console.log('Received file:', req.file);
-    // console.log('📦 Body:', req.body); // Log incoming body
-    // console.log('📸 File:', req.file); // Log uploaded file
+    const { name, price, stock, category, description } = req.body;
+    const files = req.files as Express.Multer.File[];
 
-    const { name, price, stock, category , description } = req.body;
-    const photos = req.file;
-
-    // ✅ Input Validation
-
-    if (!photos) return next(new ErrorHandler("Please add Photo", 400));
-    if (!name || !price || !stock || !category || !photos || !description) {
-      // to delete the as wahi par 
-      rm(photos.path, () => {
-        console.log('pic is deleted ')
-      })
-      return next(new ErrorHandler("All fields (name, price, stock, category, photos , description) are required!", 400));
+    if (!files || files.length === 0) {
+      return next(new ErrorHandler("Please add at least one photo", 400));
     }
 
+    if (!name || !price || !stock || !category || !description) {
+      // Delete uploaded files if validation fails
+      files.forEach(file => {
+        rm(file.path, () => {
+          console.log('Deleted file:', file.path);
+        });
+      });
+      return next(new ErrorHandler("All fields are required!", 400));
+    }
+
+    const photoPaths = files.map(file => file.path);
     const formattedCategory = typeof category === 'string' ? category.toLowerCase() : '';
-// product created
+
     await Product.create({
       name,
       price,
       stock,
       category: formattedCategory,
-      photos: photos.path,
+      photos: photoPaths,
       description
     });
 
-    await invalidateCache({ product: true , admin: true});
+    await invalidateCache({ product: true, admin: true });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Product Created Successfully",
     });
-    return;
   }
 );
 
-// export const newProduct = TryCatch(
-//   async (req: Request<{}, {}, NewProductRequestBody>, res: Response, next: NextFunction) => {
-//     // Enhanced Debug logging
-//     console.log('------ Debug Info ------');
-//     console.log('Body:', JSON.stringify(req.body, null, 2));
-//     console.log('File:', req.file);
-//     console.log('Content-Type:', req.headers['content-type']);
-//     console.log('----------------------');
+// Get all products (public)
+export const getAllProducts = TryCatch(
+  async (req: Request<{}, {}, {}, SearchRequestQuery>, res, next) => {
+    const { search, sort, category, price } = req.query;
 
-//     // Parse numeric values
-//     const price = Number(req.body.price);
-//     const stock = Number(req.body.stock);
-    
-//     const product = {
-//       name: req.body.name,
-//       price: price,
-//       stock: stock,
-//       category: req.body.category?.toLowerCase(),
-//       description: req.body.description,
-//       photos: req.file?.path
-//     };
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 8;
+    const skip = (page - 1) * limit;
 
-//     // Log the final product object
-//     console.log('Product to create:', product);
+    const baseQuery: BaseQuery = {};
 
-//     try {
-//       const createdProduct = await Product.create(product);
-//       console.log('Created product:', createdProduct);
+    if (search)
+      baseQuery.name = {
+        $regex: search,
+        $options: "i",
+      };
 
-//       await invalidateCache({ product: true });
+    if (price)
+      baseQuery.price = {
+        $lte: Number(price),
+      };
 
-//         res.status(201).json({
-//         success: true,
-//         message: "Product Created Successfully",
-//         product: createdProduct
-//       });
+    if (category) baseQuery.category = category;
 
-//     } catch (error) {
-//       // Clean up uploaded file if there's an error
-//       if (req.file?.path) {
-//         rm(req.file.path, () => {
-//           console.log('Photo deleted due to error');
-//         });
-//       }
-//       console.error('Error creating product:', error);
-//       return next(error);
-//     }
-//   }
-// );
+    const productsPromise = Product.find(baseQuery)
+      .sort(sort && { price: sort === "asc" ? 1 : -1 })
+      .limit(limit)
+      .skip(skip);
 
+    const [products, filteredOnlyProducts] = await Promise.all([
+      productsPromise,
+      Product.find(baseQuery),
+    ]);
 
-// ger the latest producty  && cache the product
+    const totalPages = Math.ceil(filteredOnlyProducts.length / limit);
+
+    return res.status(200).json({
+      success: true,
+      products,
+      totalPages,
+    });
+  }
+);
+
+// Get all products (admin)
+export const getAdminProducts = TryCatch(async (req, res, next) => {
+  let products;
+  
+  if (myCache.has("admin-products"))
+    products = JSON.parse(myCache.get("admin-products") as string);
+  else {
+    products = await Product.find({}).sort({ createdAt: -1 });
+    myCache.set("admin-products", JSON.stringify(products));
+  }
+
+  return res.status(200).json({
+    success: true,
+    products,
+  });
+});
+
+// Get latest products
 export const getLatestProduct = TryCatch(
   async (req, res, next) => {
-// cahche wil store its value in th elocalstorage in theformof key valuepair 
-// if it has value in the storagethen it will use it from there 
-// and there is no use to call the mongoose again and again
-let products
-if (myCache.has('latest-product')) {
-  return products = JSON.parse(myCache.get('latest-product') as string)
-} else {
-  const products = Product.find({}).sort({ createdAt: -1 }).limit(5);
-  myCache.set('latest-product' , JSON.stringify(products))
-}
+    let products;
+    if (myCache.has('latest-product')) {
+      products = JSON.parse(myCache.get('latest-product') as string)
+    } else {
+      const products = await Product.find({}).sort({ createdAt: -1 }).limit(5);
+      myCache.set('latest-product', JSON.stringify(products))
+    }
     
     res.status(201).json({
       success: true,
@@ -125,8 +128,7 @@ if (myCache.has('latest-product')) {
   }
 );
 
-
-// get all the categories prds and also cache the prd
+// Get all categories products
 export const getAllCategoriesProduct = TryCatch(
   async (req, res, next) => {
 
@@ -147,9 +149,7 @@ export const getAllCategoriesProduct = TryCatch(
   }
 );
 
-
-// get all the admin products so that we can search it and in this only pagination  and implement the cache
-// will work and all the product get filter acc to tge property 
+// Get all admin products
 export const getAllAdminProduct = TryCatch(
   async (req, res, next) => {
     let products;
@@ -168,8 +168,7 @@ export const getAllAdminProduct = TryCatch(
   }
 );
 
-// for the single products and implement the cache
-
+// Get single product
 export const getSingleProduct = TryCatch(
   async (req, res, next) => {
     const productId = req.params.id
@@ -198,21 +197,27 @@ export const getSingleProduct = TryCatch(
   }
 );
 
-// to update the products 
+// Update product
 export const updateProduct = TryCatch(async (req, res, next) => {
   const { id } = req.params;
   const { name, price, stock, category, description } = req.body;
-  const photos = req.file;
+  const files = req.files as Express.Multer.File[];
 
   const product = await Product.findById(id);
 
   if (!product) return next(new ErrorHandler("Product Not Found", 404));
-  // to update the photo 
-  if (photos) {
-    rm(product.photos!, () => {
-      console.log('old pic is deleted ')
+
+  // Update photos
+  if (files) {
+    // Delete old photos
+    product.photos.forEach(photo => {
+      rm(photo, () => {
+        console.log('Old photo deleted:', photo);
+      });
     });
-    product.photos = photos.path;
+    // Add new photos
+    const newPhotos = files.map(file => file.path);
+    product.photos = newPhotos;
   }
 
   if (name) product.name = name;
@@ -222,9 +227,8 @@ export const updateProduct = TryCatch(async (req, res, next) => {
   if (description) product.description = description;
 
   await product.save();
-// caching invalidate 
-  await invalidateCache({product: true , productId: String(product._id) , admin: true})
 
+  await invalidateCache({ product: true, productId: String(product._id), admin: true });
 
   res.status(200).json({
     success: true,
@@ -233,22 +237,21 @@ export const updateProduct = TryCatch(async (req, res, next) => {
   return;
 });
 
-
-
-// to deelte the products 
+// Delete product
 export const deleteProduct = TryCatch(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
   if (!product) return next(new ErrorHandler("Product Not Found", 404));
-  // deelte the pic also 
-  rm(product.photos!, () => {
-    console.log('pic is deleted ')
-  });
 
+  // Delete photos
+  product.photos.forEach(photo => {
+    rm(photo, () => {
+      console.log('Photo deleted:', photo);
+    });
+  });
 
   await product.deleteOne();
 
-  await invalidateCache({ product: true , productId: String(product._id) , admin: true});
-
+  await invalidateCache({ product: true, productId: String(product._id), admin: true });
 
   res.status(200).json({
     success: true,
@@ -256,60 +259,3 @@ export const deleteProduct = TryCatch(async (req, res, next) => {
   });
   return;
 });
-
-
-// logic for all of the routing based on the search and th ecategoreis 
-// get all the prd based on the filter and the categories wise 
-// here we use the pagination and the sorting and the filtering 
-
-
-export const getAllProducts = TryCatch(
-  async (req: Request<{}, {}, {}, SearchRequestQuery>, res, next) => {
-    const { search, sort, category, price } = req.query;
-
-    const page = Number(req.query.page) || 1;
-
-      const limit = Number(process.env.PRODUCT_PER_PAGE) || 8;
-      const skip = (page - 1) * limit;
-
-      const baseQuery: BaseQuery = {};
-
-      if (search)
-        baseQuery.name = {
-          $regex: search,
-          $options: "i",
-        };
-
-      if (price)
-        baseQuery.price = {
-          $lte: Number(price),
-        };
-
-      if (category) baseQuery.category = category;
-
-      // to add the sort of price range and the limit 
-      // of pagination as we defined t elimit is 8 
-      // and the skip for the no of prd we have to skip for the next page 
-      // and similar goes on 
-
-      const productsPromise = Product.find(baseQuery)
-        .sort(sort && { price: sort === "asc" ? 1 : -1 })
-        .limit(limit)
-        .skip(skip);
-
-      const [products, filteredOnlyProduct] = await Promise.all([
-        productsPromise,
-        Product.find(baseQuery),
-      ]);
-
-      
-      const totalPage = Math.ceil(filteredOnlyProduct.length / limit);
-
-      res.status(200).json({
-      success: true,
-      products,
-      totalPage
-    });
-  }
-);
-// 

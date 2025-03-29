@@ -1,6 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import ErrorHandler from "../utils/utility-class.js";
-import { ControllerType } from "../Types/types.js";
+
+export type ControllerFunction = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void | Response>;
 
 export const errorMiddleware = (
   err: ErrorHandler,
@@ -11,17 +16,14 @@ export const errorMiddleware = (
   err.message ||= "Internal Server Error";
   err.statusCode ||= 500;
 
-  // this will throw when u will ge hte wrong id of the user 
-  if (err.name === "CastError") err.message = "Invalid ID";
-
   return res.status(err.statusCode).json({
     success: false,
     message: err.message,
   });
 };
 
-export const TryCatch =
-  (func: ControllerType) =>
-  (req: Request, res: Response, next: NextFunction) => {
-    return Promise.resolve(func(req, res, next)).catch(next);
+export const TryCatch = (func: ControllerFunction) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(func(req, res, next)).catch(next);
   };
+};

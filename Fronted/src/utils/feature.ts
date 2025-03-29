@@ -1,29 +1,20 @@
-import { MessageResponse } from "../types/api-types";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
-import { SerializedError } from "@reduxjs/toolkit";
 import { NavigateFunction } from "react-router-dom";
 import toast from "react-hot-toast";
 
-
-type ResType =
-  | {
-      data: MessageResponse;
-    }
-  | {
-      error: FetchBaseQueryError | SerializedError;
-    };
+export type ResType = {
+  message: string;
+  success: boolean;
+};
 
 export const responseToast = (
-  res: ResType,
-  navigate: NavigateFunction | null,
+  response: any,
+  navigate: NavigateFunction,
   url: string
 ) => {
-  if ("data" in res) {
-    toast.success(res.data.message);
-    if (navigate) navigate(url);
+  if (response.data.success) {
+    toast.success(response.data.message);
+    navigate(url);
   } else {
-    const error = res.error as FetchBaseQueryError;
-    const messageResponse = error.data as MessageResponse;
-    toast.error(messageResponse.message);
+    toast.error(response.data.message);
   }
 };
