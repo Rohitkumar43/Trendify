@@ -13,17 +13,24 @@ const Productmanagement = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  if (!params.id) {
-    navigate("/admin/product");
-    return null;
-  }
-
-  const { data, isLoading, error } = useProductDetailsQuery(params.id as string);
-
   const [nameUpdate, setNameUpdate] = useState<string>("");
   const [priceUpdate, setPriceUpdate] = useState<number>(0);
   const [stockUpdate, setStockUpdate] = useState<number>(0);
   const [photoUpdate, setPhotoUpdate] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!params.id) {
+      responseToast("Product ID is required", false);
+      navigate("/admin/product");
+    }
+  }, [params.id, navigate]);
+
+  const { data, isLoading, error } = useProductDetailsQuery(params.id!, {
+    skip: !params.id,
+  });
+
+  const [updateProduct] = useUpdateProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
   useEffect(() => {
     if (data?.product) {
@@ -34,14 +41,23 @@ const Productmanagement = () => {
     }
   }, [data]);
 
-  const [updateProduct] = useUpdateProductMutation();
-  const [deleteProduct] = useDeleteProductMutation();
+  useEffect(() => {
+    if (error) {
+      responseToast("Error loading product", false);
+      navigate("/admin/product");
+    }
+  }, [error, navigate]);
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user?._id) {
       responseToast("Please login first", false);
+      return;
+    }
+
+    if (!params.id) {
+      responseToast("Product ID is required", false);
       return;
     }
 
@@ -54,7 +70,7 @@ const Productmanagement = () => {
       await updateProduct({
         formData,
         userId: user._id,
-        productId: params.id!
+        productId: params.id
       }).unwrap();
       responseToast("Product Updated Successfully", true, navigate, "/admin/product");
     } catch (error) {
@@ -68,10 +84,15 @@ const Productmanagement = () => {
       return;
     }
 
+    if (!params.id) {
+      responseToast("Product ID is required", false);
+      return;
+    }
+
     try {
       await deleteProduct({
         userId: user._id,
-        productId: params.id!
+        productId: params.id
       }).unwrap();
       responseToast("Product Deleted Successfully", true, navigate, "/admin/product");
     } catch (error) {
@@ -79,13 +100,8 @@ const Productmanagement = () => {
     }
   };
 
-  if (error) {
-    responseToast("Error loading product", false);
-    navigate("/admin/product");
-    return null;
-  }
-
   if (isLoading) return <Skeleton />;
+  if (!data?.product) return null;
 
   return (
     <div className="admin-container">

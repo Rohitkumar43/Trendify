@@ -19,7 +19,7 @@ export const productAPI = createApi({
   tagTypes: ["product"],
   endpoints: (builder) => ({
     latestProducts: builder.query<AllProductsResponse, void>({
-      query: () => "latest",
+      query: () => "latestproduct",
       providesTags: ["product"],
     }),
     allProducts: builder.query<AllProductsResponse, string>({
@@ -27,7 +27,7 @@ export const productAPI = createApi({
       providesTags: ["product"],
     }),
     categories: builder.query<CategoriesResponse, void>({
-      query: () => `categories`,
+      query: () => `allcategories`,
       providesTags: ["product"],
     }),
     searchProducts: builder.query<SearchProductsResponse, SearchProductsRequest>({
@@ -71,7 +71,6 @@ export const productAPI = createApi({
 });
 
 export const {
-  useProductDetailsQuery,
   useLatestProductsQuery,
   useAllProductsQuery,
   useCategoriesQuery,
@@ -79,4 +78,5 @@ export const {
   useNewProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
+  useProductDetailsQuery,
 } = productAPI;

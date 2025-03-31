@@ -3,7 +3,7 @@ import { AllUsersResponse, DeleteUserRequest, MessageResponse, UserResponse } fr
 import { User } from "../../types/types";
 import axios from "axios";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_SERVER_URL || 'http://localhost:4000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_SERVER_URL || 'http://localhost:5000';
 
 export const userApi = createApi({
     reducerPath: 'userapi',
@@ -42,7 +42,7 @@ export const userApi = createApi({
 export const getUser = async (id: string) => {
     try {
         const { data }: { data: UserResponse } = await axios.get(
-            `${BACKEND_URL}/api/v1/user/${id}?id=${id}`
+            `${BACKEND_URL}/api/v1/user/${id}`
         );
         return data;
     } catch (error) {
