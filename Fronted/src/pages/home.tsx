@@ -6,9 +6,10 @@ import { useLatestProductsQuery } from "../redux/api/productAPI";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../redux/reducer/cartReducer";
 import { CartItem } from "../types/types";
-import { FaAnglesDown, FaHeadset } from "react-icons/fa6";
+import { FaAnglesDown } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { Slider } from "6pp";
+import { clients, services } from "../data/homeData";
 
 const categories = [
   "Electronics",
@@ -53,7 +54,10 @@ const Home = () => {
   return (
     <>
       <div className="home">
-        <section></section>
+        <section className="hero-section">
+          <h1>Discover Quality Products</h1>
+          <p>Shop the latest trends with confidence</p>
+        </section>
 
         <div>
           <aside>
@@ -149,7 +153,7 @@ const Home = () => {
         <div>
           <h2>Our Clients</h2>
           <div>
-            {/* {clients.map((client, i) => (
+            {clients.map((client, i) => (
               <motion.img
                 initial={{
                   opacity: 0,
@@ -167,10 +171,10 @@ const Home = () => {
                 alt={client.alt}
                 key={i}
               />
-            ))} */}
+            ))}
           </div>
 
-          {/* <motion.p
+          <motion.p
             initial={{ opacity: 0, y: -100 }}
             whileInView={{
               opacity: 1,
@@ -181,7 +185,7 @@ const Home = () => {
             }}
           >
             Trusted By 100+ Companies in 30+ countries
-          </motion.p> */}
+          </motion.p>
         </div>
       </article>
 
@@ -195,7 +199,7 @@ const Home = () => {
 
       <article className="our-services">
         <ul>
-          {/* {services.map((service, i) => (
+          {services.map((service, i) => (
             <motion.li
               initial={{ opacity: 0, y: -100 }}
               whileInView={{
@@ -209,11 +213,11 @@ const Home = () => {
             >
               <div>{service.icon}</div>
               <section>
-                <h3>{service.title}Y</h3>
-                <p>{service.title}</p>
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
               </section>
             </motion.li>
-          ))} */}
+          ))}
         </ul>
       </article>
     </>

@@ -20,8 +20,9 @@ interface AuthRequest extends Request {
 
 // Middleware to check if user is authenticated
 export const authenticate = TryCatch(async (req: AuthRequest, res, next) => {
-  const { id } = req.query;
-
+  // Check for ID in query params or route params
+  const id = req.query.id || req.params.id;
+  
   if (!id || typeof id !== 'string') return next(new ErrorHandler("Please login first", 401));
 
   const user = await User.findById(id);
@@ -33,8 +34,9 @@ export const authenticate = TryCatch(async (req: AuthRequest, res, next) => {
 
 // Middleware to make sure only admin is allowed
 export const adminOnly = TryCatch(async (req: AuthRequest, res, next) => {
-  const { id } = req.query;
-
+  // Check for ID in query params or route params
+  const id = req.query.id || req.params.id;
+  
   if (!id || typeof id !== 'string') return next(new ErrorHandler("Please login first", 401));
 
   const user = await User.findById(id);
