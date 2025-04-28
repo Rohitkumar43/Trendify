@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-const CLOUD_NAME = 'dv62cowbi';
+const CLOUD_NAME = 'dj5q966nb';
 const UPLOAD_PRESET = 'trendify_unsigned';  // Create this preset name in Cloudinary dashboard
 
 cloudinary.config({

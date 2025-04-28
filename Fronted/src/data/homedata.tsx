@@ -4,23 +4,23 @@ import { ReactElement } from "react";
 // Client logos for the "Our Clients" section
 export const clients = [
   {
-    src: "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/client1_zcxuhs.png",
+    src: "https://via.placeholder.com/150x50?text=Client+1",
     alt: "Client 1"
   },
   {
-    src: "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/client2_fxbcqz.png",
+    src: "https://via.placeholder.com/150x50?text=Client+2",
     alt: "Client 2"
   },
   {
-    src: "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/client3_ixhpyq.png",
+    src: "https://via.placeholder.com/150x50?text=Client+3",
     alt: "Client 3"
   },
   {
-    src: "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/client4_wnhcji.png",
+    src: "https://via.placeholder.com/150x50?text=Client+4",
     alt: "Client 4"
   },
   {
-    src: "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/client5_yjnglk.png",
+    src: "https://via.placeholder.com/150x50?text=Client+5",
     alt: "Client 5"
   }
 ];

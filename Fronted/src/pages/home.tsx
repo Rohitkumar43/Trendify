@@ -9,7 +9,7 @@ import { CartItem } from "../types/types";
 import { FaAnglesDown } from "react-icons/fa6";
 import { motion } from "framer-motion";
 import { Slider } from "6pp";
-import { clients, services } from "../data/homeData";
+import { clients, services, Service } from "../data/homedata";
 
 const categories = [
   "Electronics",
@@ -23,8 +23,8 @@ const categories = [
 ];
 
 const banners = [
-  "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253445/rmbjpuzctjdbtt8hewaz.png",
-  "https://res.cloudinary.com/dj5q966nb/image/upload/v1719253433/ticeufjqvf6napjhdiee.png"
+  "https://via.placeholder.com/1200x400?text=Banner+1",
+  "https://via.placeholder.com/1200x400?text=Banner+2"
 ];
 
 const Home = () => {
@@ -96,7 +96,7 @@ const Home = () => {
               ))}
             </>
           ) : (
-            latestProducts?.products.map((i) => (
+            latestProducts && latestProducts.products && latestProducts.products.map((i) => (
               <ProductCard
                 key={i._id}
                 productId={i._id}
@@ -199,7 +199,7 @@ const Home = () => {
 
       <article className="our-services">
         <ul>
-          {services.map((service, i) => (
+          {services.map((service: Service, i) => (
             <motion.li
               initial={{ opacity: 0, y: -100 }}
               whileInView={{

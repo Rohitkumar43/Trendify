@@ -5,7 +5,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { userApi } from "./api/userApi";
 import userReducer from './reducer/userReducer';
 import { productAPI } from "./api/productAPI";
-import { cartReducer } from "./reducer/cartReducer";
+import cartReducer from "./reducer/cartReducer";
 import { orderApi } from "./api/orderApi";
 import { dashboardApi } from "./api/dashbordApi";  
 
@@ -18,7 +18,7 @@ export const store = configureStore({
         [orderApi.reducerPath]: orderApi.reducer,
         [dashboardApi.reducerPath]: dashboardApi.reducer,
         user: userReducer,
-        cart: cartReducer.reducer,
+        cart: cartReducer,
     },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware()
