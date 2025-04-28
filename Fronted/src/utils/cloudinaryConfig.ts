@@ -1,10 +1,16 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-const CLOUD_NAME = 'dj5q966nb';
+const CLOUD_NAME = 'dv62cowbi';
+const API_KEY = '928269317293884';
+const API_SECRET = 'v-O5DH_DANKrxMxOuYwpSl5oOS4';
 const UPLOAD_PRESET = 'trendify_unsigned';  // Create this preset name in Cloudinary dashboard
 
+// Configure Cloudinary with your credentials
 cloudinary.config({
   cloud_name: CLOUD_NAME,
+  api_key: API_KEY,
+  api_secret: API_SECRET,
+  secure: true
 });
 
 export const uploadImage = async (file: File) => {

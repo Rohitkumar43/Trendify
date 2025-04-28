@@ -23,9 +23,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Configure Google Auth Provider
+// Configure Google Auth Provider with additional parameters to help with popup issues
 googleProvider.setCustomParameters({
-    prompt: 'select_account'
+    prompt: 'select_account',
+    // Adding these parameters can help with popup issues
+    ux_mode: 'popup',
+    // Ensure we're using HTTPS for the redirect
+    redirect_uri: window.location.origin
 });
 
 export { auth, googleProvider };
