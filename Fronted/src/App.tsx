@@ -19,6 +19,7 @@ const Home = lazy(() => import('./pages/home'));
 const Search = lazy(() => import('./pages/search'));
 const ProductDetails = lazy(() => import('./pages/product-details'));
 const Cart = lazy(() => import('./pages/cart'));
+const ImageUploadDemo = lazy(() => import('./pages/ImageUploadDemo'));
 
 // Lazy-loaded Admin Routes
 const Dashboard = lazy(() => import('./pages/admin/dashboard'));
@@ -73,6 +74,7 @@ const App = () => {
           <Route path='/search' element={<Search />} />
           <Route path='/product/:id' element={<ProductDetails />} />
           <Route path='/cart' element={<Cart />} />
+          <Route path='/image-upload' element={<ImageUploadDemo />} />
           
           {/* Login Route (Only accessible if not logged in) */}
           <Route

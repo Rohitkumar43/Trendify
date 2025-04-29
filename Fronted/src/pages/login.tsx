@@ -84,7 +84,7 @@ const Login = () => {
         toast.error("Popup was blocked. Please allow popups for this site.");
       } else if (error.code === "auth/cancelled-popup-request" || error.code === "auth/popup-closed-by-user") {
         // This is a common error when user closes the popup - no need to show an error
-        toast.info("Login cancelled");
+        toast("Login cancelled");
       } else if (error.code === "auth/unauthorized-domain") {
         toast.error("This domain is not authorized for Google Sign-In. Make sure to add your domain in Firebase console.");
       } else if (error.code === "auth/network-request-failed") {

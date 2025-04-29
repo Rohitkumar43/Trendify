@@ -5,6 +5,7 @@ import {
   FaSignInAlt,
   FaUser,
   FaSignOutAlt,
+  FaImage,
 } from "react-icons/fa";
 import { useState } from "react";
 import { User } from "../types/types";
@@ -40,6 +41,9 @@ const Header = ({ user }: PropsType) => {
       </Link>
       <Link onClick={() => setIsOpen(false)} to={"/cart"}>
         <FaShoppingBag />
+      </Link>
+      <Link onClick={() => setIsOpen(false)} to={"/image-upload"}>
+        <FaImage />
       </Link>
 
       {user?._id ? (
