@@ -43,7 +43,8 @@ const columns: Column<DataType>[] = [
 
 const Products = () => {
   const { user } = useSelector((state: RootState) => state.user);
-  const { data, isLoading, isError } = useAllProductsQuery(user?._id || "");
+  const userId = user?._id || "";
+  const { data, isLoading, isError } = useAllProductsQuery(userId);
 
   if (isLoading) return <Skeleton />;
   if (isError) return <div>Error loading products</div>;

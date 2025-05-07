@@ -27,7 +27,7 @@ app.get('/allcategories', getAllCategoriesProduct)
 // get all the admin products so that we can search it and in this only pagination 
 // will work and all the product get filter acc to tge property
 
-app.get('/admin-prd', adminOnly, getAdminProducts);
+app.get('/admin-prd/:id', adminOnly, getAdminProducts);
 // to get single prd
 app.get('/singleprd', getSingleProduct);
 // to update and delete the product 

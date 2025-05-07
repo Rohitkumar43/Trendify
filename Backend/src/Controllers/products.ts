@@ -94,7 +94,11 @@ export const getAllProducts = TryCatch(
 
 // Get all products (admin)
 export const getAdminProducts = TryCatch(async (req, res, next) => {
-  const { id } = req.query;
+  const { id } = req.params;
+  
+  console.log("Admin Products Request - User ID:", id);
+  console.log("Request params:", req.params);
+  console.log("Request query:", req.query);
   
   if (!id) {
     return next(new ErrorHandler("Please provide user ID", 400));
@@ -109,6 +113,7 @@ export const getAdminProducts = TryCatch(async (req, res, next) => {
     myCache.set("admin-products", JSON.stringify(products));
   }
 
+  console.log("Sending response with products:", products.length);
   return res.status(200).json({
     success: true,
     products,

@@ -17,7 +17,9 @@ const userImg = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJxA5cTf-
 const Dashboard = () => {
   const { user } = useSelector((state: RootState) => state.user);
 
-  const { isLoading, data: statsData, error, isError } = useStatsQuery(user?._id!);
+  // Use empty string as fallback to avoid conditional hook calls
+  const userId = user?._id || "";
+  const { isLoading, data: statsData, error, isError } = useStatsQuery(userId);
 
   const stats = statsData?.stats;
 

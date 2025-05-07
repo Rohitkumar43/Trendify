@@ -1,23 +1,16 @@
-import { v2 as cloudinary } from 'cloudinary';
+// Note: We don't import cloudinary directly in frontend code
+// as it's meant for Node.js environments
 
-const CLOUD_NAME = 'dv62cowbi';
-const API_KEY = '928269317293884';
-const API_SECRET = 'v-O5DH_DANKrxMxOuYwpSl5oOS4';
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dv62cowbi';
+const API_KEY = import.meta.env.VITE_CLOUDINARY_API_KEY || '977992946798739';
 const UPLOAD_PRESET = 'trendify_unsigned';  // Create this preset name in Cloudinary dashboard
-
-// Configure Cloudinary with your credentials
-cloudinary.config({
-  cloud_name: CLOUD_NAME,
-  api_key: API_KEY,
-  api_secret: API_SECRET,
-  secure: true
-});
 
 export const uploadImage = async (file: File) => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', UPLOAD_PRESET);
   formData.append('folder', 'trendify');  // This will store images in a 'trendify' folder
+  formData.append('api_key', API_KEY);
 
   try {
     const response = await fetch(
@@ -27,7 +20,15 @@ export const uploadImage = async (file: File) => {
         body: formData,
       }
     );
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Cloudinary error:', errorData);
+      throw new Error(errorData.error?.message || 'Failed to upload image');
+    }
+    
     const data = await response.json();
+    console.log('Upload successful:', data);
     return data.secure_url;
   } catch (error) {
     console.error('Error uploading to Cloudinary:', error);
@@ -35,4 +36,4 @@ export const uploadImage = async (file: File) => {
   }
 };
 
-export default cloudinary;
+// We don't export cloudinary instance as it's not needed in browser environment

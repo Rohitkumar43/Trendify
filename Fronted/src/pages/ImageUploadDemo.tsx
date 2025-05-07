@@ -29,7 +29,7 @@ const ImageUploadDemo = () => {
             {uploadedImages.map((imageUrl, index) => (
               <div key={index} className="gallery-item">
                 <CloudinaryImage 
-                  src={imageUrl} 
+                  src={imageUrl}
                   alt={`Uploaded image ${index + 1}`} 
                   width={300}
                   transformation="c_fill,g_auto"
@@ -47,7 +47,7 @@ const ImageUploadDemo = () => {
           <div className="transformation-examples">
             <div className="example">
               <h3>Original</h3>
-              <CloudinaryImage 
+              <CloudinaryImage
                 src={uploadedImages[0]} 
                 alt="Original image" 
                 width={200}

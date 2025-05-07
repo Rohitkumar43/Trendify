@@ -35,44 +35,65 @@ const CloudinaryImage = ({
         // Parse the URL to add transformations
         const urlParts = src.split('/upload/');
         if (urlParts.length === 2) {
-          // Add transformations if provided
-          const transformedUrl = transformation
-            ? `${urlParts[0]}/upload/${transformation}/${urlParts[1]}`
-            : src;
+          // Create an array to hold all transformations
+          const transformations = [];
           
           // Add width and height if provided
-          let finalUrl = transformedUrl;
-          if (width || height) {
-            const dimensions = [];
-            if (width) dimensions.push(`w_${width}`);
-            if (height) dimensions.push(`h_${height}`);
-            
-            // Check if there are already transformations
-            if (transformation) {
-              finalUrl = finalUrl.replace('/upload/', `/upload/${dimensions.join(',')},`);
-            } else {
-              finalUrl = `${urlParts[0]}/upload/${dimensions.join(',')}/${urlParts[1]}`;
-            }
+          if (width) transformations.push(`w_${width}`);
+          if (height) transformations.push(`h_${height}`);
+          
+          // Add custom transformations if provided
+          if (transformation) {
+            // Split by comma in case multiple transformations are provided
+            const customTransforms = transformation.split(',');
+            transformations.push(...customTransforms);
           }
           
+          // Build the final URL
+          let finalUrl;
+          if (transformations.length > 0) {
+            finalUrl = `${urlParts[0]}/upload/${transformations.join(',')}/${urlParts[1]}`;
+          } else {
+            finalUrl = src;
+          }
+          
+          console.log('Transformed image URL:', finalUrl);
           setImageUrl(finalUrl);
+        } else {
+          console.warn('Invalid Cloudinary URL format:', src);
+          setImageUrl(src); // Use original if format is unexpected
         }
       } catch (err) {
         console.error('Error formatting Cloudinary URL:', err);
         setImageUrl(src); // Fallback to original URL
       }
+    } else {
+      // Not a Cloudinary URL, use as is
+      console.log('Using non-Cloudinary URL:', src);
+      setImageUrl(src);
     }
 
+    // Create a new image object to preload the image
     const img = new Image();
     img.src = imageUrl;
+    
     img.onload = () => {
       setIsLoading(false);
+      setError(false);
     };
-    img.onerror = () => {
+    
+    img.onerror = (e) => {
+      console.error('Image failed to load:', imageUrl, e);
       setError(true);
       setIsLoading(false);
     };
-  }, [src, width, height, transformation]);
+    
+    // Cleanup function
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [src, width, height, transformation, imageUrl]);
 
   if (error) {
     return <div className="cloudinary-image-error">Image failed to load</div>;
